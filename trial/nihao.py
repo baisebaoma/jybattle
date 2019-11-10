@@ -1,4 +1,2 @@
-def hello():
-    print('nihao')
-    return 0
-
+import socket
+s = socket.socket.connect()

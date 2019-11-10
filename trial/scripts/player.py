@@ -13,6 +13,7 @@ class Server:
         """
         构造
         """
+        global p
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__connections = list()
         self.__nicknames = list()
@@ -24,7 +25,7 @@ class Server:
         """
         connection = self.__connections[user_id]
         nickname = self.__nicknames[user_id]
-        print('[Server] 用户', user_id, nickname, '加入聊天室')
+        print('用户', user_id, nickname, '加入聊天室')
         self.__broadcast(message='用户 ' + str(nickname) + '(' + str(user_id) + ')' + '加入聊天室')
 
         # 侦听
@@ -66,14 +67,16 @@ class Server:
         # 绑定端口
         self.__socket.bind(('127.0.0.1', 8888))
         # 启用监听
-        self.__socket.listen(10)
+        self.__socket.listen(5)
         print('服务器已启动')
 
+        '''
         # 清空连接
         self.__connections.clear()
         self.__nicknames.clear()
         self.__connections.append(None)
         self.__nicknames.append('System')
+        '''
 
         # 开始侦听
         while True:
@@ -88,12 +91,17 @@ class Server:
                 obj = json.loads(buffer)
                 # 如果是连接指令，那么则返回一个新的用户编号，接收用户连接
                 if obj['type'] == 'login':
+                    p.connect(login_username=obj["username"], login_password=obj["password"])
+                    p.player_list[obj["username"]].connection = connection
+
+
+                    '''
                     self.__connections.append(connection)
-                    self.__nicknames.append(obj['nickname'])
+                    self.__nicknames.append(obj['username'])
                     connection.send(json.dumps({
                         'id': len(self.__connections) - 1
                     }).encode())
-
+                    '''
                     # 开辟一个新的线程
                     thread = threading.Thread(target=self.__user_thread, args=(len(self.__connections) - 1, ))
                     thread.setDaemon(True)
@@ -107,6 +115,8 @@ class Server:
 class Player:
 
     # 把所有在线的玩家放在一个 array 里，用 self.online 判断是否在线
+
+    # 我现在把connection从放进了Player.connection 那以后发信息就这么发 受信息也这么受
 
     def __init__(self):
 
@@ -122,6 +132,7 @@ class Player:
         self.room = -1  # 游戏房间号 -1为在大厅
         self.playing = False  # 游戏中
         self.exist = False
+        self.connection = None
 
         # 下面的用于
 
@@ -184,6 +195,15 @@ class Player:
             print("注册成功！")
             self.f.close()
 
+    def receive(self):
+        self.connection.listen()
+
+    def send(self, message):
+        self.connection.send((json.dumps({
+                    '?': '?',
+                    'message': message,
+                }).encode()))
+
     def logout(self):
         try:
             self.f = open(f"./usr/{self.login_username}", "w+", encoding='cp936')
@@ -207,11 +227,17 @@ class Player:
         pass
 
 # 按理来说应该谁登录谁就排在前面，有人下机就让他那个位置空出来给别人登录，只要一个客户端一连上服务器就给他先派一个位置
+# 一旦数据被改了 就要写进文件里
 
 
 class PlayerController:
     # 我是传出还是传入？在谁那里操作？
     # 当有人进来时，用connect
+    # 应该只留给外部一个接口，就是用户名，让这个类来做一切事情
+    # 要不 创建一个字典？
+    # 我想把它封装成 p."用户名".login("username", "password")
+    # 这样好了 p.player_list[p.find("用户名")].干嘛
+
     '''
     这个类用于管理Player，包括客户端连接、存储用户数据、玩家行为
     '''
@@ -242,12 +268,12 @@ class PlayerController:
             x += 1
 
     def disconnect(self, player_name):
-        self.player_list[self.__from_name_find_place(player_name)].logout()
-        self.player_list[self.__from_name_find_place(player_name)].online = False
+        self.player_list[self.find(player_name)].logout()
+        self.player_list[self.find(player_name)].online = False
         # if found someone disconnected numbered x
         # del player_online[0]
 
-    def __from_name_find_place(self, name):
+    def find(self, name):
         x = 0
         for player in self.player_list:
             if player.login_username == name:
@@ -256,4 +282,5 @@ class PlayerController:
         return -1
 
 
-print("PLAYER.PY IMPORTED")
+p = PlayerController()
+
