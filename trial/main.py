@@ -17,14 +17,15 @@ print(" _____________ \n"
       "|_____________|\n")
 '''
 
-
 # print(locale.getpreferredencoding(False))
 p = PlayerController()
-# s = Server()
-# s.start()
+s = Server()
+s.start()
 
 
-p.connect(login_username= 'asd', login_password= "asd")
+login_username = input("用户名：")
+login_password = input("密码：")
+p.connect(login_username=login_username, login_password=login_username)
 print(f"\n当前在线玩家：")
 for player in p.player_list:
     if player.online:
@@ -32,13 +33,16 @@ for player in p.player_list:
         player.rp = 10000
         print(f"{player.login_username} 的点券：{player.rp}")
 
-p.player_list[p.find(f"{用户名}")].要改的数据 = 多少
+# p.player_list[p.find(f"{用户名}")].要改的数据 = 多少
 
+# p.player_list[1].connect.send()
+
+'''
 # 真的吗？？这真的是最折衷的方案？
 # 我可以写一个 用户名list 然后..?
 # 要发送信息：printp("信息","用户名")，让这个函数去找用户名在哪里
 # 要修改数据：change("用户名", "数据", "值")change
-
+'''
 
 '''
 n = 0
@@ -91,4 +95,3 @@ print(player)
 del player[3]
 print(player)
 '''
-

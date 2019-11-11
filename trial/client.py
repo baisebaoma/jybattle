@@ -11,6 +11,10 @@ def clear():
 # 只能在Windows下使用
 
 
+temp = os.system('title 监狱威龙客户端（控制台版）')
+temp = os.system('MODE con: COLS=50 LINES=30')
+
+
 class Client:
     """
     客户端
@@ -21,6 +25,7 @@ class Client:
         构造
         """
         super().__init__()
+        self.god = False
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.__id = None
         self.__nickname = None
@@ -29,7 +34,6 @@ class Client:
         """
         接受消息线程
         """
-        global mute
         while True:
             fuffer = ''
             # noinspection PyBroadException
@@ -57,24 +61,10 @@ class Client:
                 if fuffer_split:
                     for item in fuffer_split:
                         obj = json.loads(item)
-                        if obj['sender_id'] == -1:
-                            # 让-1是系统
-                            print(obj['message'])
-                        elif mute is False:
-                            if obj['message'] == '?' or obj['message'] == '？':
-                                print(f"【聊天】[{obj['sender_nickname']} ({obj['sender_id']})] 示意敌人已不见踪影")
-                            else:
-                                print(f"【聊天】[{obj['sender_nickname']} ({obj['sender_id']})]说：{obj['message']}")
+                        print(obj['message'])
                 else:
                     obj = json.loads(fuffer)
-                    if obj['sender_id'] == -1:
-                        # 让-1是系统
-                        print(obj['message'])
-                    elif mute is False:
-                        if obj['message'] == '?' or obj['message'] == '？':
-                            print(f"【聊天】[{obj['sender_nickname']} ({obj['sender_id']})] 示意敌人已不见踪影")
-                        else:
-                            print(f"【聊天】[{obj['sender_nickname']} ({obj['sender_id']})]说：{obj['message']}")
+                    print(obj['message'])
                 # 这里重复了代码。记得改。
 
                 '''
@@ -110,12 +100,20 @@ class Client:
         发送消息线程
         :param message: 消息内容
         """
-        self.__socket.send(json.dumps({
-            'type': 'broadcast',
-            'sender_id': self.__id,
-            'message': message
-        }).encode())
-        # 显示自己发送的消息
+        if self.god is True:
+            temp = message.split(" ")
+            self.__socket.send(json.dumps({
+                'type': 'change',
+                'username': temp[0],
+                'thing': temp[1],
+                'add': temp[2]
+            }).encode())
+        else:
+            self.__socket.send(json.dumps({
+                'type': 'broadcast',
+                'sender_id': self.__id,
+                'message': message
+            }).encode())
         '''
 print(f"""抱歉，你的版本过低，服务器已断开与你的连接。
 服务器版本：{obj['version']}，你的版本：{version}。
@@ -137,6 +135,10 @@ print(f"""抱歉，你的版本过低，服务器已断开与你的连接。
         global version
         username = input("用户名：")
         password = input("密码：")
+        if username == 'admin' and password == 'admin':
+            print('上帝模式已开启')
+            self.god = True
+            temp = os.system('title 上帝')
         # .split(' ')[0]
         # 将昵称发送给服务器，获取用户id
         self.__socket.send(json.dumps({
@@ -151,7 +153,7 @@ print(f"""抱歉，你的版本过低，服务器已断开与你的连接。
             buffer = self.__socket.recv(1024).decode()
             obj = json.loads(buffer)
             clear()
-            print(f'成功登录，收到的数据：【{obj}】')
+            print(f'登录请求已发送，来自服务器的数据：【{obj}】')
             # 开启子线程用于接受数据
             thread = threading.Thread(target=self.__receive_message_thread)
             thread.setDaemon(True)
@@ -192,6 +194,5 @@ print(f"""抱歉，你的版本过低，服务器已断开与你的连接。
 
 
 version = '1.15'
-mute = False
 client = Client()
 client.start()

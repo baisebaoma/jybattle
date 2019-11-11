@@ -5,6 +5,84 @@ import json
 import os
 
 
+class Admin:
+    def __init__(self):
+        global p
+        self.connection = None
+        self.temp = None
+
+    def listen(self):
+        # 侦听
+        while True:
+            # noinspection PyBroadException
+            try:
+                buffer = self.connection.recv(1024).decode()
+                # 解析成json数据
+                obj = json.loads(buffer)
+                # 如果是广播指令
+                if obj['type'] == 'change':
+                    self.change(username=obj['username'], thing=obj['thing'], add=int(obj['add']))
+                else:
+                    print('[Server] 无法解析json数据包:', self.connection.getsockname(), self.connection.fileno())
+                    print(obj)
+            except Exception:
+                print('[Server] 连接失效:', self.connection.getsockname(), self.connection.fileno())
+
+    def change(self, username, thing, add):
+        global p
+        # p.player_list[p.find(f"{username}")].{thing} += add
+        # print(username)
+        # print(thing)
+        # print(add)
+        # print(p)
+        temp = None
+
+        '''
+        # string = f"temp = p.player_list[p.find('{username}')].{thing}"
+
+        # string = f"temp = p.player_list[p.find('asd')].rp"
+        # exec(string)
+
+        exec(f"temp = p.player_list[p.find('asd')].rp")
+        # temp = p.player_list[p.find('asd')].rp 这句话有用
+
+        # exec("temp = p.player_list[p.find('asd')].rp", {'p': p})
+        # , {'username': username, 'thing': thing, 'add': add}
+
+        # exec(f"temp = p.player_list[p.find('{username}')].{thing}")
+        print(temp)
+        '''
+        # ###### exec(f"temp = p.player_list[p.find('{username}')].{thing}")  # 这一行和trial的一模一样 为什么没用啊
+        # x = f"temp = p.player_list[p.find('{username}')].{thing}"
+        # print(x)
+
+        exec(f"p.player_list[p.find('{username}')].{thing} += {add}")  # 这一行有用
+        exec(f"self.temp = p.player_list[p.find('{username}')].{thing}")  # 这一行没用
+
+        self.connection.send(json.dumps({
+            'message': f"p.player_list[p.find('{{{username}}}')] 从 {self.temp - add} 被修改成了 {self.temp}"
+        }).encode())
+
+        # 终于有用了 原来是要用 self.temp ？
+
+        '''
+        # exec(f"p.player_list[p.find('{username}')].{thing} += {add}")
+        # exec(f"temp = p.player_list[p.find(f'{username}')].{thing}")
+
+        # string = f"""p.player_list[p.find('{username}')].{thing} += {add}
+# temp = p.player_list[p.find('{username}')].{thing}"""
+        string = f"p.player_list[p.find('username')].{thing} + {add}"
+        exec(string, {"p": p})
+        '''
+        print(p.player_list[p.find("asd")].rp)
+
+    def read(self):
+        pass
+
+    def online(self):
+        pass
+
+
 class Server:
     """
     服务器类
@@ -15,18 +93,13 @@ class Server:
         """
         global p
         self.__socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-        self.__connections = list()
-        self.__nicknames = list()
 
     def __user_thread(self, user_id):
         """
         用户子线程
         :param user_id: 用户id
         """
-        connection = self.__connections[user_id]
-        nickname = self.__nicknames[user_id]
-        print('用户', user_id, nickname, '加入聊天室')
-        self.__broadcast(message='用户 ' + str(nickname) + '(' + str(user_id) + ')' + '加入聊天室')
+        connection = None
 
         # 侦听
         while True:
@@ -36,29 +109,12 @@ class Server:
                 # 解析成json数据
                 obj = json.loads(buffer)
                 # 如果是广播指令
-                if obj['type'] == 'broadcast':
-                    self.__broadcast(obj['sender_id'], obj['message'])
+                if True:
+                    pass
                 else:
                     print('[Server] 无法解析json数据包:', connection.getsockname(), connection.fileno())
             except Exception:
                 print('[Server] 连接失效:', connection.getsockname(), connection.fileno())
-                self.__connections[user_id].close()
-                self.__connections[user_id] = None
-                self.__nicknames[user_id] = None
-
-    def __broadcast(self, user_id=0, message=''):
-        """
-        广播
-        :param user_id: 用户id(0为系统)
-        :param message: 广播内容
-        """
-        for i in range(1, len(self.__connections)):
-            if user_id != i:
-                self.__connections[i].send(json.dumps({
-                    'sender_id': user_id,
-                    'sender_nickname': self.__nicknames[user_id],
-                    'message': message
-                }).encode())
 
     def start(self):
         """
@@ -85,31 +141,52 @@ class Server:
 
             # 尝试接受数据
             # noinspection PyBroadException
-            try:
-                buffer = connection.recv(1024).decode()
-                # 解析成json数据
-                obj = json.loads(buffer)
-                # 如果是连接指令，那么则返回一个新的用户编号，接收用户连接
-                if obj['type'] == 'login':
-                    p.connect(login_username=obj["username"], login_password=obj["password"])
-                    p.player_list[obj["username"]].connection = connection
-
-
-                    '''
-                    self.__connections.append(connection)
-                    self.__nicknames.append(obj['username'])
-                    connection.send(json.dumps({
-                        'id': len(self.__connections) - 1
+            # try:
+            buffer = connection.recv(1024).decode()
+            # 解析成json数据
+            obj = json.loads(buffer)
+            # 如果是连接指令，那么则返回一个新的用户编号，接收用户连接
+            if obj['type'] == 'login':
+                if obj["username"] == "admin" and obj["password"] == "admin":
+                    print("爹来了")
+                    # 给最高管理权限
+                    p.admin.connection = connection
+                    p.admin.connection.send(json.dumps({
+                        'message': "连接成功"
                     }).encode())
-                    '''
-                    # 开辟一个新的线程
-                    thread = threading.Thread(target=self.__user_thread, args=(len(self.__connections) - 1, ))
+                    thread = threading.Thread(target=p.admin.listen())
                     thread.setDaemon(True)
                     thread.start()
+
+                elif p.connect(login_username=obj["username"], login_password=obj["password"]) == 0:
+                    p.player_list[p.find(obj["username"])].connection = connection
+                    p.player_list[p.find(obj["username"])].connection.send(json.dumps({
+                        'sender_id': 0,
+                        'message': "连接成功"
+                    }).encode())
                 else:
-                    print('[Server] 无法解析json数据包:', connection.getsockname(), connection.fileno())
-            except Exception:
-                print('[Server] 无法接受数据:', connection.getsockname(), connection.fileno())
+                    connection.send(json.dumps({
+                        'sender_id': 0,
+                        'message': "用户名或密码错误"
+                    }).encode())
+
+
+                '''
+                self.__connections.append(connection)
+                self.__nicknames.append(obj['username'])
+                connection.send(json.dumps({
+                    'id': len(self.__connections) - 1
+                }).encode())
+                '''
+                # 开辟一个新的线程
+                # thread = threading.Thread(target=self.__user_thread, args=(len(self.__connections) - 1, ))
+                # thread.setDaemon(True)
+                # thread.start()
+            else:
+                print('[Server] 无法解析json数据包:', connection.getsockname(), connection.fileno())
+            # except Exception:
+            #     print('[Server] 无法接受数据:', connection.getsockname(), connection.fileno())
+            #     print(obj)
 
 
 class Player:
@@ -156,10 +233,11 @@ class Player:
                         self.online = True
                         if self.room is True:
                             print("你正在参与一场游戏，正在重连")
-                            self.reconnect()
+                            self.reconnect(self)
                     else:
                         print(f"登录失败：密码错误")
                         self.online = False
+                        return 1
                 elif line[0:5] == "GD = ":
                     self.gold = int(line[5:-1])
                 elif line[0:5] == "DQ = ":
@@ -243,6 +321,7 @@ class PlayerController:
     '''
 
     def __init__(self):
+        self.admin = Admin()
         self.player_list = []
 
     def connect(self, login_username, login_password):  # 传入 username 和 password，交给 Player.login 去验证
@@ -255,6 +334,7 @@ class PlayerController:
             print(f"连接成功 {self.player_list[len(self.player_list) - 1].login_username}")
         else:
             print("连接失败")
+            return 1
 
         # 如果他的名字和某一个一样 那就证明要不就重复登录 要不就重连
         x = 0
@@ -266,6 +346,7 @@ class PlayerController:
                 del self.player_list[x + 1]
                 del self.player_list[-1]
             x += 1
+        return 0
 
     def disconnect(self, player_name):
         self.player_list[self.find(player_name)].logout()
@@ -283,4 +364,4 @@ class PlayerController:
 
 
 p = PlayerController()
-
+print("Hello from player.py")
