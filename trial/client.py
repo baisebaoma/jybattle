@@ -42,8 +42,6 @@ class Client:
                 while True:
                     buffer = self.__socket.recv(1024).decode()
                     fuffer += buffer
-                    # print(f"fuffer = {fuffer}")
-                    # print(buffer)
                     if buffer == '':
                         break
                     if buffer[-1] == '}':
@@ -67,20 +65,6 @@ class Client:
                     print(obj['message'])
                 # 这里重复了代码。记得改。
 
-                '''
-                # print(f"obj = {obj}")
-                # obj = json.loads(fuffer)
-                if obj['sender_id'] == -1:
-                    # 让-1是系统
-                    print(obj['message'])
-                elif mute is False:
-                    if obj['message'] == '?' or obj['message'] == '？':
-                        print(f"【聊天】[{obj['sender_nickname']} ({obj['sender_id']})] 示意敌人已不见踪影")
-                    else:
-                        print(f"【聊天】[{obj['sender_nickname']} ({obj['sender_id']})]说：{obj['message']}")
-                # print(buffer)
-                '''
-
             except OSError:
                 print('无法从服务器获取数据')
                 return
@@ -95,23 +79,25 @@ class Client:
                     print(f'\n{fuffer}\n')
                     print('可能是黏包问题，解码失败，无法显示这句话。')
 
-    def __send_message_thread(self, message):
+    def __send_message_thread(self, type, message):
         """
         发送消息线程
         :param message: 消息内容
         """
         if self.god is True:
             temp = message.split(" ")
-            self.__socket.send(json.dumps({
-                'type': 'change',
-                'username': temp[0],
-                'thing': temp[1],
-                'add': temp[2]
-            }).encode())
+            try:
+                self.__socket.send(json.dumps({
+                    'type': 'change',
+                    'username': temp[0],
+                    'thing': temp[1],
+                    'add': temp[2]
+                }).encode())
+            except IndexError:
+                print("缺少数据")
         else:
             self.__socket.send(json.dumps({
-                'type': 'broadcast',
-                'sender_id': self.__id,
+                'type': type,
                 'message': message
             }).encode())
         '''
