@@ -1,5 +1,8 @@
 from scripts.characters_zh_CN import *
 import random
+import json
+import socket
+import time
 
 
 class 卡牌:
@@ -10,9 +13,11 @@ class 卡牌:
         self.价值 = 0
         self.加成 = list()
 
-    def 学习(self):
+    '''
+        def 学习(self):
         self.加成.append('CBT')
-    # 这个好像没有用？？
+        # 这个好像没有用？？
+    '''
 
     def 购买(self, 对象):
         if 对象.金币 >= self.价值:
@@ -52,39 +57,72 @@ class 泽拉斯(卡牌):
 
 class 牌堆类(list):
     def 初始化(self):
-        self.append(卡牌())
+        self.append(泽拉斯())
+        self.append(泽拉斯())
+        self.append(泽拉斯())
+        self.append(泽拉斯())
         self.洗牌()
 
     def 洗牌(self):
         random.shuffle(self)
 
 
+class 角色池类(list):
+
+    def 重置(self):
+        self.clear()
+        self.append(我是俊博之王())
+        self.append(德思勤六楼的工头())
+        self.append(Sparrow())
+        self.append(昊天金阙无上至尊自然妙有弥罗至真玉皇上帝())
+        self.append(花一番玉虚总菊五雷大真人玄都境万寿帝君())
+        self.append(痞子())
+        self.append(穿山甲())
+        self.append(陈伯伯())
+        self.append(长方体移动师())
+        self.append(KoKou())
+
+
 class 游戏:
-    def __init__(self, 玩家列表):
+    玩家列表 = []
+
+    def __init__(self, 玩家列表=玩家列表):
         self.玩家列表 = 玩家列表
         random.shuffle(玩家列表)
-        角色池 = [我是俊博之王(), 德思勤六楼的工头(), Sparrow(), 昊天金阙无上至尊自然秒有弥罗至真玉皇上帝(), 花一番玉虚总菊五雷大真人玄都境万寿帝君(), 痞子(), 穿山甲(), 陈伯伯(), 长方体移动师(), KoKou()]
-        牌堆 = 牌堆类()
-        弃牌堆 = 牌堆类()
-        牌堆.初始化()
+        self.角色池 = 角色池类()
+        self.牌堆 = 牌堆类()
+        self.弃牌堆 = 牌堆类()
+        self.牌堆.初始化()
 
     def 开始(self):
+        '''
         self.玩家列表[0].角色 = 花一番玉虚总菊五雷大真人玄都境万寿帝君()
         self.玩家列表[0].金币 += 100
         self.玩家列表[0].手牌.append(泽拉斯())
         self.玩家列表[0].手牌[0].购买(self.玩家列表[0])
         self.玩家列表[0].英雄池[0].技能(1, self.玩家列表[0])
-        print(self.玩家列表[0].积分)
-
+        self.广播(self.玩家列表[0].积分)
+        self.玩家列表[0].拿牌(self.牌堆, self.弃牌堆)
+        '''
+        random.shuffle(self.玩家列表)
+        self.角色池.重置()
+        random.shuffle(self.角色池)
+        for 玩家 in self.玩家列表:
+            玩家.角色 = self.角色池.pop()
+            print(f"游戏内 广播：玩家列表=self.玩家列表, 信息=f'{玩家.角色.缩写}', 类型='', 玩家=f'{玩家.ID}'")
+            联网.广播(玩家列表=self.玩家列表, 信息=f'{玩家.角色.缩写}', 类型='', 玩家=f'{玩家.ID}')
 
 
 class 玩家:
-    def __init__(self):
+    def __init__(self, ID):
+        self.ID = ID
         self.金币 = 0
         self.角色 = None
         self.英雄池 = list()
         self.手牌 = list()
         self.积分 = 0
+        self.连接 = None
+        self.回应 = None
 
     def 拿牌(self, 牌堆, 弃牌堆):
         if len(牌堆) <= 1:
@@ -98,9 +136,74 @@ class 玩家:
         print(f"{牌堆[0]}, {牌堆[1]}")
 
 
-a = 游戏([玩家(), 玩家(), 玩家()])
-a.开始()
+class 联网:
+    global a
+    __人数变量 = 0
+    __socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
+    @classmethod
+    def 开始(cls):
+        """
+        启动服务器
+        """
+        # 绑定端口
+        cls.__socket.bind(('127.0.0.1', 8888))
+
+        # 启用监听
+        cls.__socket.listen(5)
+        print('服务器已启动')
+
+        # 开始侦听
+        while True:
+            连接, address = cls.__socket.accept()
+            print('[Server] 收到一个新连接', 连接.getsockname(), 连接.fileno())
+
+            # 尝试接受数据
+            # noinspection PyBroadException
+            # try:
+            缓存 = 连接.recv(1024).decode()
+            # 解析成json数据
+            对象 = json.loads(缓存)
+            # 如果是连接指令，那么则返回一个新的用户编号，接收用户连接
+            if 对象['type'] == 'login':
+                a.玩家列表.append(玩家(ID=对象['username']))
+                a.玩家列表[-1].连接 = 连接
+                cls.私发(a.玩家列表[-1], "登陆成功", "聊天", 对象['username'])
+                '''
+                a.玩家列表[cls.__人数变量].连接.send(json.dumps({
+                    'message': f"连接成功，你现在是玩家{cls.__人数变量}"
+                }).encode())
+                '''
+                cls.__人数变量 += 1
+            if cls.__人数变量 == 4:
+                a.开始()
+
+    @classmethod
+    def 广播(cls, 玩家列表=[], 信息='', 类型=None, 玩家=None):
+        for 对象 in 玩家列表:
+            对象.连接.send(json.dumps({
+                'type': 类型,
+                'message': 信息,
+                'player': 玩家
+                }).encode())
+            print(f"联网内 广播：'type': {类型}, 'message': {信息}, 'player': {玩家} 给 {对象.ID}")
+            time.sleep(0.02) # 要是不加这一行就会有的数据收不到 我也不知道为什么
+            pass
+
+    @classmethod
+    def 私发(cls, 对象=None, 信息='', 类型=None, 玩家=None):
+        print(f"联网内 私发：'type': {类型}, 'message': {信息}, 'player': {玩家} 给 {对象.ID}")
+        对象.连接.send(json.dumps({
+                'type': 类型,
+                'message': 信息,
+                'player': 玩家
+                }).encode())
+        pass
+
+
+
+a = 游戏()
+联网.开始()
 
 """
     global paidui

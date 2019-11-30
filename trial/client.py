@@ -59,10 +59,10 @@ class Client:
                 if fuffer_split:
                     for item in fuffer_split:
                         obj = json.loads(item)
-                        print(obj['message'])
+                        print(obj)
                 else:
                     obj = json.loads(fuffer)
-                    print(obj['message'])
+                    print(obj)
                 # 这里重复了代码。记得改。
 
             except OSError:
@@ -120,7 +120,8 @@ print(f"""抱歉，你的版本过低，服务器已断开与你的连接。
         """
         global version
         username = input("用户名：")
-        password = input("密码：")
+        # password = input("密码：")
+        password = 1
         if username == 'admin' and password == 'admin':
             print('上帝模式已开启')
             self.god = True
@@ -139,13 +140,13 @@ print(f"""抱歉，你的版本过低，服务器已断开与你的连接。
             buffer = self.__socket.recv(1024).decode()
             obj = json.loads(buffer)
             clear()
-            print(f'登录请求已发送，来自服务器的数据：【{obj}】')
+            print(f'登录请求已发送：【{obj}】')
             # 开启子线程用于接受数据
             thread = threading.Thread(target=self.__receive_message_thread)
             thread.setDaemon(True)
             thread.start()
         except json.decoder.JSONDecodeError:
-            print('无法从服务器获取数据')
+            print(f'解码错误，{obj}')
         except KeyError:
             clear()
             print(f'请更新版本。\n当前客户端版本：{version}\n服务器版本：{obj["version"]}')
