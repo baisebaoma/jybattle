@@ -175,11 +175,13 @@ class 联网:
                 }).encode())
                 '''
                 cls.__人数变量 += 1
-            if cls.__人数变量 == 4:
+            if cls.__人数变量 == 3:
                 a.开始()
 
     @classmethod
-    def 广播(cls, 玩家列表=[], 信息='', 类型=None, 玩家=None):
+    def 广播(cls, 玩家列表=None, 信息='', 类型=None, 玩家=None):
+        if 玩家列表 is None:
+            玩家列表 = []
         for 对象 in 玩家列表:
             对象.连接.send(json.dumps({
                 'type': 类型,
@@ -187,8 +189,7 @@ class 联网:
                 'player': 玩家
                 }).encode())
             print(f"联网内 广播：'type': {类型}, 'message': {信息}, 'player': {玩家} 给 {对象.ID}")
-            time.sleep(0.02) # 要是不加这一行就会有的数据收不到 我也不知道为什么
-            pass
+            # time.sleep(0.001)  # 要是不加这一行就会有的数据收不到 我也不知道为什么
 
     @classmethod
     def 私发(cls, 对象=None, 信息='', 类型=None, 玩家=None):
@@ -198,8 +199,6 @@ class 联网:
                 'message': 信息,
                 'player': 玩家
                 }).encode())
-        pass
-
 
 
 a = 游戏()
