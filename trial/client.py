@@ -44,22 +44,22 @@ class Client:
                     # time.sleep(0.1)
                     buffer = self.__socket.recv(1024).decode()
                     fuffer += buffer
-                    if buffer == '':
-                        break
-                    if buffer[-1] == '}':
+                    if buffer == '' or buffer[-1] == '}':
                         break
 
                 # 解决黏包问题
                 find = 0
                 # print(type(fuffer))
-                # print(f"fuffer = {fuffer}")
+                print(f"fuffer = {fuffer}")
                 fuffer_split = []
                 while find < len(fuffer) - 1:
                     if fuffer[find] == "}" and fuffer[find + 1] == "{":
                         fuffer_split.append(fuffer[0:find + 1])  # 注意：包括开头，不包括结尾！
-                        fuffer = fuffer[find + 1:-1]
+                        fuffer = fuffer[find + 1:]
                         find = -1
                     find += 1
+                print(f"current fuffer = {fuffer}")
+                fuffer_split.append(fuffer)
                 if fuffer_split:
                     print(f"fuffer_split = {fuffer_split}\n")
                     for item in fuffer_split:
