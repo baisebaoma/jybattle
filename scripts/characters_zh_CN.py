@@ -4,6 +4,7 @@ import random
 class 角色:
     加成 = list()
     缩写 = None
+    颜色 = 0
 
 
 class 我是俊博之王(角色):
