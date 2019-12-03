@@ -16,9 +16,12 @@ os.system(f'MODE con: COLS={宽度} LINES={高度}')
 
 class UI:
     """UI类负责所有的（文字版本的）UI绘制"""
+    垂直同步 = True
+    if 垂直同步:
+        总输出 = ''
 
-    @staticmethod
-    def printc(内容):  # 居中输出
+    @classmethod
+    def printc(cls, 内容):  # 全局控制居中输出，只要垂直同步是True 就会保存到总输出里
         global 宽度
         汉字计数 = 0
         总共计数 = 0
@@ -31,7 +34,16 @@ class UI:
         if 空格数 < 0:
             空格数 = 0
         输出 = ' ' * 空格数 + 内容
-        print(输出)
+        if cls.垂直同步:
+            if 内容 == '\n':
+                cls.总输出 += '\n'
+            else:
+                cls.总输出 += 输出 + '\n'
+        else:
+            if 内容 == '\n':
+                print()
+            else:
+                print(输出)
 
     @staticmethod
     def 翻译英雄池(列表):  # 打印列表
@@ -41,6 +53,15 @@ class UI:
         for 英雄 in 列表:
             字符串 += f'{英雄} '
         return 字符串
+
+    '''
+    @classmethod
+    def __print(cls, 内容):  # 复写print来达到控制垂直同步的目的
+        if cls.垂直同步:
+            cls.总输出 += 内容 + '\n'
+        else:
+            print(内容)
+    '''
 
     @staticmethod
     def cls():
@@ -68,7 +89,7 @@ class UI:
                        f"{玩家.手牌}手牌" + ' ' * 3 + str(玩家.积分) + '积分')
             cls.printc(cls.翻译英雄池(玩家.英雄池))
             if rank != len(游戏.玩家列表):
-                print()
+                cls.printc('\n')
             rank += 1
 
     @classmethod
@@ -81,10 +102,9 @@ class UI:
             del 游戏.消息队列[0]
         for 消息 in 游戏.消息队列:
             cls.printc(消息)
-            # print(消息)
         if len(游戏.消息队列) < 条数:
             for i in range(1, 条数 + 1 - len(游戏.消息队列)):
-                print()
+                cls.printc('\n')
 
     @classmethod
     def draw_card(cls, 游戏):
@@ -104,11 +124,13 @@ class UI:
     @classmethod
     def refresh(cls, 游戏):
         cls.cls()
-        print()
         cls.draw_round(游戏)
         cls.draw_message(游戏)
         cls.draw_rank(游戏)
         cls.draw_control(游戏)
+        if cls.垂直同步:
+            print(cls.总输出)
+            cls.总输出 = ''
 
 
 class 玩家:
@@ -359,7 +381,7 @@ class 游戏:
 
         def 搜索(self, ID):
             for 玩家 in self:
-                print(玩家.ID)
+                # print(玩家.ID)
                 if 玩家.ID == ID:
                     return 玩家
     房间名 = '' + '的房间'
@@ -470,7 +492,7 @@ while True:
         a.玩家列表.搜索('pzk').金币 -= 13
         a.消息队列.append("pzk 花费 13 金，拆掉了 xjb 的 泽拉斯！")
     UI.refresh(游戏=a)
-    time.sleep(0.4)
+    time.sleep(0.5)
 
 version = '1.15'
 
