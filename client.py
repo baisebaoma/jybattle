@@ -5,9 +5,10 @@ import threading
 import json
 import os
 import time
+import random
 
-宽度 = 55
-高度 = 60
+宽度 = 64
+高度 = 65
 
 os.system('title 监狱威龙客户端（控制台版）')
 os.system(f'MODE con: COLS={宽度} LINES={高度}')
@@ -26,7 +27,10 @@ class UI:
             if '\u4e00' <= 字 <= '\u9fa5':
                 汉字计数 += 1
             总共计数 += 1
-        输出 = ' ' * abs(宽度 // 2 - 总共计数 // 2 - 汉字计数 // 2) + 内容
+        空格数 = 宽度 // 2 - 总共计数 // 2 - 汉字计数 // 2
+        if 空格数 < 0:
+            空格数 = 0
+        输出 = ' ' * 空格数 + 内容
         print(输出)
 
     @staticmethod
@@ -53,8 +57,8 @@ class UI:
     def draw_rank(cls, 游戏):
         rank = 1
         cls.draw_line()
-        cls.printc("排行榜")
-        cls.draw_line()
+        # cls.printc("排行榜")
+        # cls.draw_line()
         # cls.draw_line()
         for 玩家 in 游戏.玩家列表:
             cls.draw_line(number=rank, ID=玩家.ID)
@@ -63,31 +67,48 @@ class UI:
             cls.printc(f"{玩家.金币}金币" + ' ' * 3 + \
                        f"{玩家.手牌}手牌" + ' ' * 3 + str(玩家.积分) + '积分')
             cls.printc(cls.翻译英雄池(玩家.英雄池))
-            print()
+            if rank != len(游戏.玩家列表):
+                print()
             rank += 1
 
     @classmethod
-    def draw_message(cls, 消息队列):
-        # print("  通告栏")
+    def draw_message(cls, 游戏):
         cls.draw_line()
-        cls.printc("通告栏")
-        cls.draw_line()
-        for 消息 in 消息队列:
+        # cls.printc("通告栏")
+        # cls.draw_line()
+        条数 = 10
+        while len(游戏.消息队列) > 条数:
+            del 游戏.消息队列[0]
+        for 消息 in 游戏.消息队列:
             cls.printc(消息)
             # print(消息)
+        if len(游戏.消息队列) < 条数:
+            for i in range(1, 条数 + 1 - len(游戏.消息队列)):
+                print()
 
     @classmethod
-    def draw_control(cls, 控制):
-        cls.draw_line()
-        cls.printc("控制台")
-        cls.draw_line()
-        cls.printc(控制)
+    def draw_card(cls, 游戏):
+        pass
 
     @classmethod
-    def draw_ui(cls, 游戏):
+    def draw_round(cls, 游戏):
+        cls.printc(f"第{游戏.回合}回合")
+
+    @classmethod
+    def draw_control(cls, 游戏):
+        cls.draw_line()
+        # cls.printc("手牌区")
+        # cls.draw_line()
+        cls.draw_card(游戏.手牌)
+
+    @classmethod
+    def refresh(cls, 游戏):
+        cls.cls()
+        print()
+        cls.draw_round(游戏)
+        cls.draw_message(游戏)
         cls.draw_rank(游戏)
-        cls.draw_message(游戏.消息队列)
-        cls.draw_control(游戏.控制)
+        cls.draw_control(游戏)
 
 
 class 玩家:
@@ -332,15 +353,32 @@ print(f"""抱歉，你的版本过低，服务器已断开与你的连接。
 
 
 class 游戏:
-    玩家列表 = list()
+    class 玩家列表类(list):
+        def __init__(self, *args):
+            super().__init__(*args)
+
+        def 搜索(self, ID):
+            for 玩家 in self:
+                print(玩家.ID)
+                if 玩家.ID == ID:
+                    return 玩家
+    房间名 = '' + '的房间'
+    玩家列表 = 玩家列表类()
     消息队列 = list()
     输入 = None
     控制 = None
+    手牌 = list()
+    回合 = 1
 
+
+'''
+    def 改值(self, 玩家, 信息, 修改量):  # 肯定根据ID来搜啊 你这傻逼
+        self.玩家列表[a.玩家列表.index(pzk)].金币 += 2
+        '''
 
 a = 游戏()
 
-a.消息队列 = ["现在轮到选择 长方体移动师 的玩家行动！", "选择 长方体移动师 的玩家是 pzk ！", "pzk 正在选择获得手牌或者金币", "pzk 已获得2金", "pzk 正在使用技能", "pzk 花费 13 金，拆掉了 xjb 的 泽拉斯！"]
+a.消息队列 = ["现在轮到选择 长方体移动师 的玩家行动！", "选择 长方体移动师 的玩家是 pzk ！", "pzk 正在选择获得手牌或者金币"]
 
 xjb = 玩家('xjb')
 xjb.金币 = 10
@@ -363,7 +401,7 @@ zxx.英雄池 = ['艾希', '刀妹', '锐雯']
 zxx.手牌 = 7
 zxx.积分 = 36
 
-pzk = 玩家('pzk（你自己）')
+pzk = 玩家('pzk')
 pzk.金币 = 2
 pzk.角色 = '长方体移动师'
 pzk.英雄池 = ['阿卡丽', '艾克', '亚索']
@@ -422,9 +460,17 @@ print("\033[7m这是默认红色字体背景绿色\033[0m")
 '''
 
 while True:
-    UI.draw_ui(游戏=a)
-    time.sleep(1)
-    UI.cls()
+    index = random.randint(1, 3)
+    if index == 1:
+        a.消息队列.append("pzk 已获得2金")
+        a.玩家列表.搜索('pzk').金币 += 2
+    elif index == 2:
+        a.消息队列.append("pzk 正在使用技能")
+    elif index == 3:
+        a.玩家列表.搜索('pzk').金币 -= 13
+        a.消息队列.append("pzk 花费 13 金，拆掉了 xjb 的 泽拉斯！")
+    UI.refresh(游戏=a)
+    time.sleep(0.4)
 
 version = '1.15'
 
