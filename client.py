@@ -14,9 +14,9 @@ UI.宽度 = 60
 UI.高度 = 65
 UI.长宽改变()
 
-a = 游戏()
+# a = 游戏()
 
-a.消息队列 = ["现在轮到选择 长方体移动师 的玩家行动！", "选择 长方体移动师 的玩家是 pzk ！", "pzk 正在选择获得手牌或者金币"]
+游戏.消息队列 = ["现在轮到选择 长方体移动师 的玩家行动！", "选择 长方体移动师 的玩家是 pzk ！", "pzk 正在选择获得手牌或者金币"]
 
 xjb = 玩家('xjb')
 xjb.金币 = 10
@@ -74,19 +74,19 @@ cbt.英雄池 = ['火男', '吸血鬼', '锤石']
 cbt.手牌 = 0
 cbt.积分 = 26
 
-a.玩家列表.append(zer)
-a.玩家列表.append(xjb)
-a.玩家列表.append(zxx)
-a.玩家列表.append(pzk)
-a.玩家列表.append(tym)
-a.玩家列表.append(sxd)
-a.玩家列表.append(zhl)
-a.玩家列表.append(cbt)
+游戏.玩家列表.append(zer)
+游戏.玩家列表.append(xjb)
+游戏.玩家列表.append(zxx)
+游戏.玩家列表.append(pzk)
+游戏.玩家列表.append(tym)
+游戏.玩家列表.append(sxd)
+游戏.玩家列表.append(zhl)
+游戏.玩家列表.append(cbt)
 
 cmpfun = operator.attrgetter('积分')
-a.玩家列表.sort(key=cmpfun, reverse=True)
+游戏.玩家列表.sort(key=cmpfun, reverse=True)
 
-a.控制 = ["猫", '盖伦', '猫', '泽拉斯', '卡特', '轮子妈']
+游戏.控制 = ["猫", '盖伦', '猫', '泽拉斯', '卡特', '轮子妈']
 '''
 print("\033[31m这是红色字体\033[0m")
 print("\033[32m这是绿色字体\033[0m")
@@ -99,24 +99,25 @@ print("\033[7m这是默认红色字体背景绿色\033[0m")
 # threading.Thread(target=client.kbdlistener.listen()).start()
 
 client.kbdlistener.listen()  # 开始监听键盘
+# 开始监听网络
 
 while True:
     action = random.randint(1, 3)
-    player = a.玩家列表[random.randint(0, 7)]
+    player = 游戏.玩家列表[random.randint(0, 7)]
     if action == 1:
-        a.消息队列.append(f"{player.ID} 已获得2金")
-        a.玩家列表.搜索(player.ID).金币 += 2
+        游戏.消息队列.append(f"{player.ID} 已获得2金")
+        游戏.玩家列表.搜索(player.ID).金币 += 2
     elif action == 2:
-        a.消息队列.append(f"{player.ID} 正在使用技能")
+        游戏.消息队列.append(f"{player.ID} 正在使用技能")
     elif action == 3:
-        if a.玩家列表.搜索(player.ID).金币 >= 6:
-            a.玩家列表.搜索(player.ID).金币 -= 6
-            a.玩家列表.搜索(player.ID).英雄池.append('猫')
-            a.消息队列.append(f"{player.ID} 花费 6 金，装备了【猫】")
+        if 游戏.玩家列表.搜索(player.ID).金币 >= 6:
+            游戏.玩家列表.搜索(player.ID).金币 -= 6
+            游戏.玩家列表.搜索(player.ID).英雄池.append('猫')
+            游戏.消息队列.append(f"{player.ID} 花费 6 金，装备了【猫】")
         else:
-            a.消息队列.append(f"{player.ID} 想花费 6 金装备【猫】，但是他没有钱！")
-    UI.refresh(游戏=a)
-    time.sleep(0.1)
+            游戏.消息队列.append(f"{player.ID} 想花费 6 金装备【猫】，但是他没有钱！")
+    UI.refresh(游戏=游戏)
+    time.sleep(1)
 
 '''
 version = '1.15'
