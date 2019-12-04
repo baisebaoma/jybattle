@@ -96,6 +96,9 @@ print("\033[38m这是默认字体\033[0m")
 print("\033[7m这是默认红色字体背景绿色\033[0m")
 '''
 
+# threading.Thread(target=client.kbdlistener.listen()).start()
+
+client.kbdlistener.listen()  # 开始监听键盘
 
 while True:
     action = random.randint(1, 3)
@@ -113,9 +116,7 @@ while True:
         else:
             a.消息队列.append(f"{player.ID} 想花费 6 金装备【猫】，但是他没有钱！")
     UI.refresh(游戏=a)
-    client.kbdlistener.listen()
-
-
+    time.sleep(0.1)
 
 '''
 version = '1.15'

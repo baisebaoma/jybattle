@@ -45,7 +45,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.UI">
+  <component name="RunManager" selected="Python.client (1)">
     <configuration name="UI" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="poker" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -153,8 +153,8 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.UI" />
         <item itemvalue="Python.client (1)" />
+        <item itemvalue="Python.UI" />
         <item itemvalue="Python.kbdlistener" />
         <item itemvalue="Python.kbdlistenerserver" />
         <item itemvalue="Python.trial" />
@@ -186,5 +186,15 @@
         </entry>
       </map>
     </option>
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager>
+      <breakpoints>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/client/kbdlistener.py</url>
+          <option name="timeStamp" value="3" />
+        </line-breakpoint>
+      </breakpoints>
+    </breakpoint-manager>
   </component>
 </project>
