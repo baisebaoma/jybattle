@@ -63,7 +63,7 @@ class Admin:
         # x = f"temp = PlayerController.player_list[PlayerController.find('{username}')].{thing}"
         # print(x)
         '''
-
+        '''
         if PlayerController.player_list[PlayerController.find('{username}')]:
             exec(f"PlayerController.player_list[PlayerController.find('{username}')].{thing} += {add}")  # 这一行有用
             exec(f"self.temp = PlayerController.player_list[PlayerController.find('{username}')].{thing}")  # 这一行没用
@@ -75,13 +75,14 @@ class Admin:
             # 终于有用了 原来是要用 self.temp ？
         else:
             PlayerController.connect(login_username=username, login_password="adminchange")
+        '''
 
         '''
         # exec(f"PlayerController.player_list[PlayerController.find('{username}')].{thing} += {add}")
         # exec(f"temp = PlayerController.player_list[PlayerController.find(f'{username}')].{thing}")
 
         # string = f"""PlayerController.player_list[PlayerController.find('{username}')].{thing} += {add}
-# temp = PlayerController.player_list[PlayerController.find('{username}')].{thing}"""
+        # temp = PlayerController.player_list[PlayerController.find('{username}')].{thing}"""
         string = f"PlayerController.player_list[PlayerController.find('username')].{thing} + {add}"
         exec(string, {"p": p})
         '''
@@ -223,6 +224,53 @@ class Server:
         while True:
             # noinspection PyBroadException
             try:
+                fuffer = ''
+
+                # 解决断包问题
+                while True:
+                    # time.sleep(0.1)
+                    buffer = cls.__socket.recv(1024).decode()
+                    fuffer += buffer
+                    if buffer == '' or buffer[-1] == '}':
+                        break
+
+                # 解决黏包问题
+                find = 0
+                # print(type(fuffer))
+                # print(f"fuffer = {fuffer}")
+                fuffer_split = []
+                while find < len(fuffer) - 1:
+                    if fuffer[find] == "}" and fuffer[find + 1] == "{":
+                        fuffer_split.append(fuffer[0:find + 1])  # 注意：包括开头，不包括结尾！
+                        fuffer = fuffer[find + 1:]
+                        find = -1
+                    find += 1
+                # print(f"current fuffer = {fuffer}")
+                fuffer_split.append(fuffer)
+                if fuffer_split:
+                    # print(f"fuffer_split = {fuffer_split}\n")
+                    for item in fuffer_split:
+                        obj = json.loads(item)
+                        print(f"{obj}")
+                    # fuffer_split.clear()
+                else:
+                    obj = json.loads(fuffer)
+                    print(f"{obj}")
+                # 这里重复了代码。记得改。
+            except OSError:
+                print('无法从服务器获取数据')
+                return
+            # except OSError:
+            except json.decoder.JSONDecodeError:
+                # print(f"\n\n\nfuffer\n\n\n")
+                # print(f'obj = {obj}')
+                if fuffer == '':
+                    print('\n可能是服务器关闭或BUG，无法接收信息。')
+                else:
+                    print(f'\n{fuffer}\n')
+                    print('可能是黏包问题，解码失败，无法显示这句话。')
+            '''
+            try:
                 buffer = connection.recv(1024).decode()
                 # 解析成json数据
                 obj = json.loads(buffer)
@@ -233,6 +281,7 @@ class Server:
                     print('[Server] 无法解析json数据包:', connection.getsockname(), connection.fileno())
             except Exception:
                 print('[Server] 连接失效:', connection.getsockname(), connection.fileno())
+            '''
 
     @classmethod
     def start(cls):
@@ -244,13 +293,12 @@ class Server:
 
         # 启用监听
         cls.__socket.listen(5)
-        print('服务器已启动')
+        print('服务器已启动，等待连接')
 
         # 开始侦听
         while True:
             connection, address = cls.__socket.accept()
-            print('[Server] 收到一个新连接', connection.getsockname(), connection.fileno())
-
+            print('收到一个新连接', connection.getsockname(), connection.fileno())
             # 尝试接受数据
             # noinspection PyBroadException
             # try:
