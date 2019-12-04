@@ -1,5 +1,5 @@
 import os
-
+from client.game import 游戏
 
 class UI:
     键盘监听 = None
@@ -135,7 +135,7 @@ class UI:
         cls.draw_card(游戏)
 
     @classmethod
-    def refresh(cls, 游戏):
+    def refresh(cls):
         cls.cls()
         cls.draw_round(游戏)
         cls.draw_message(游戏)

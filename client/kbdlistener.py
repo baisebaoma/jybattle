@@ -10,17 +10,22 @@ def on_press(key):
 def on_release(key):
     if key == keyboard.Key.left:
         UI.键盘监听 = 'left'
+        UI.refresh()
     elif key == keyboard.Key.right:
         UI.键盘监听 = 'right'
+        UI.refresh()
     elif key == keyboard.Key.up:
         UI.键盘监听 = 'up'
+        UI.refresh()
     elif key == keyboard.Key.down:
         UI.键盘监听 = 'down'
+        UI.refresh()
     elif key == keyboard.Key.enter:
         UI.键盘监听 = 'enter'
+        UI.refresh()
     elif key == keyboard.Key.space:
         UI.键盘监听 = 'space'
-        UI.refresh(游戏=游戏)
+        UI.refresh()
 
 # return False 就可以结束
 
