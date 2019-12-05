@@ -25,7 +25,7 @@ xjb.积分 = 20
 
 zer = 玩家('zer')
 zer.金币 = 7
-zer.角色 = '潜伏'
+zer.角色 = '德思勤六楼的工头'
 zer.英雄池 = ['卡莎', '劫', '猫']
 zer.手牌 = 7
 zer.积分 = 14
@@ -67,7 +67,7 @@ zhl.积分 = 18
 
 cbt = 玩家('cbt')
 cbt.金币 = 8
-cbt.角色 = '潜伏'
+cbt.角色 = '穿山甲'
 cbt.英雄池 = ['火男', '吸血鬼', '锤石']
 cbt.手牌 = 0
 cbt.积分 = 26
@@ -84,7 +84,7 @@ cbt.积分 = 26
 cmpfun = operator.attrgetter('积分')
 游戏.玩家列表.sort(key=cmpfun, reverse=True)
 
-游戏.控制 = ["\033[31m猫\033[0m", '盖伦', '猫', '泽拉斯', '卡特', '轮子妈']
+游戏.控制 = ["猫", '盖伦', '猫', '泽拉斯', '卡特', '轮子妈']
 '''
 print("\033[31m这是红色字体\033[0m")
 print("\033[32m这是绿色字体\033[0m")
@@ -93,6 +93,8 @@ print("\033[34m这是蓝色字体\033[0m")
 print("\033[38m这是默认字体\033[0m")
 print("\033[7m这是默认红色字体背景绿色\033[0m")
 '''
+
+网络.套接字.connect(('127.0.0.1', 8888))
 
 client.kbdlistener.listen()  # 开始监听键盘
 # 开始监听网络
@@ -105,6 +107,7 @@ while True:
         游戏.玩家列表.搜索(player.ID).金币 += 2
     elif action == 2:
         游戏.消息队列.append(f"{player.ID} 已获得1手牌")
+        游戏.玩家列表.搜索(player.ID).手牌 += 1
     elif action == 3:
         if 游戏.玩家列表.搜索(player.ID).金币 >= 6:
             游戏.玩家列表.搜索(player.ID).金币 -= 6
@@ -114,7 +117,7 @@ while True:
         else:
             游戏.消息队列.append(f"{player.ID} 想花费 6 金装备【猫】，但是他没有钱！")
     UI.refresh()
-    time.sleep(0.3)
+    time.sleep(1)
 
 '''
 version = '1.15'

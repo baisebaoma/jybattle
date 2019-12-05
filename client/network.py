@@ -61,11 +61,7 @@ class 网络:
                     print('可能是黏包问题，解码失败，无法显示这句话。')
 
     @classmethod
-    def __send_message_thread(cls, 类型, 内容):
-        """
-        发送消息线程
-        :param message: 消息内容
-        """
+    def 发送(cls, 内容, 类型="request"):
         cls.套接字.send(json.dumps({
             'type': 类型,
             'message': 内容
@@ -89,11 +85,10 @@ class 网络:
         # password = input("密码：")
         password = 1
         # 将昵称发送给服务器，获取用户id
-        self.__socket.send(json.dumps({
+        self.套接字.send(json.dumps({
             'type': 'login',
             'username': username,
             'password': password,
-            'version': version,
         }).encode())
         # 尝试接受数据
         try:
@@ -102,7 +97,7 @@ class 网络:
             thread.setDaemon(True)
             thread.start()
         except json.decoder.JSONDecodeError:
-            print(f'解码错误，')
+            print(f'解码错误')
         except KeyError:
             # clear()
             print(f'请更新版本。')
@@ -118,3 +113,4 @@ class 网络:
             self.登录()
         except ConnectionRefusedError:
             print('本地服务器未开启！请联系开发者。')
+

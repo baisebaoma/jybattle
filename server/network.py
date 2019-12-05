@@ -46,109 +46,105 @@ class Admin:
         pass
 
 
-class Player:
-
-    # 把所有在线的玩家放在一个 array 里，用 self.online 判断是否在线
-
-    # 我现在把connection从放进了Player.connection 那以后发信息就这么发 受信息也这么受
+class 玩家:
 
     def __init__(self):
 
         # 下面的用于login
-        self.login_username = None  # 登陆时使用的用户名
-        self.login_password = None  # 登陆时使用的密码
-        self.f = None  # 读取的用户文件
-        self.online = False  # 是否登陆成功
-        self.gold = 0  # 金币
-        self.rp = 0  # 点券
-        self.win_games = 0  # 胜场
-        self.lose_games = 0  # 负场
-        self.room = -1  # 游戏房间号 -1为在大厅
-        self.playing = False  # 游戏中
+        self.用户名 = None  # 登陆时使用的用户名
+        self.密码 = None  # 登陆时使用的密码
+        self.文件 = None  # 读取的用户文件
+        self.在线 = False  # 是否登陆成功
+        self.金币 = 0  # 金币
+        self.点券 = 0  # 点券
+        self.胜场 = 0  # 胜场
+        self.负场 = 0  # 负场
+        self.房间 = -1  # 游戏房间号 -1为在大厅
+        self.游戏中 = False  # 游戏中
         self.exist = False
-        self.connection = None
+        self.连接 = None
 
         # 下面的用于
 
-    def login(self, login_username, login_password):
+    def 登录(self, 用户名, 密码):
         # self.login_username = input("输入用户名：")
         # self.login_password = input("输入密码： ")
-        self.login_username = login_username
-        self.login_password = login_password
+        self.用户名 = 用户名
+        self.密码 = 密码
 
         try:
-            print(f"正在尝试登录: {self.login_username}")
-            self.f = open(f"./usr/{self.login_username}", "r", encoding='utf-8')  # 我的Windows 用的是cp936 不是 UTF-8
+            print(f"正在尝试登录: {self.用户名}")
+            self.文件 = open(f"./usr/{self.用户名}", "r", encoding='utf-8')  # 我的Windows 用的是cp936 不是 UTF-8
             self.exist = True
 
-            for line in self.f:
-                if line[0:5] == "PW = ":
-                    if self.login_password == line[5:-1]:  # line[5:-1] 就是密码，-1 的原因是要去掉\n
-                        if self.online:
+            for 行 in self.文件:
+                if 行[0:5] == "PW = ":
+                    if self.密码 == 行[5:-1]:  # line[5:-1] 就是密码，-1 的原因是要去掉\n
+                        if self.在线:
                             print("你把这个号上正在线的玩家踢下线了！！")
-                        print(f"登录成功！欢迎 {self.login_username}")
-                        self.online = True
-                        if self.room is True:
+                        print(f"登录成功！欢迎 {self.用户名}")
+                        self.在线 = True
+                        if self.房间 is True:
                             print("你正在参与一场游戏，正在重连")
                             self.reconnect(self)
                     else:
                         print(f"登录失败：密码错误")
-                        self.online = False
+                        self.在线 = False
                         return 1
-                elif line[0:5] == "GD = ":
-                    self.gold = int(line[5:-1])
-                elif line[0:5] == "DQ = ":
-                    self.rp = int(line[5:-1])
-                elif line[0:5] == "WM = ":
-                    self.win_games = int(line[5:-1])
-                elif line[0:5] == "LM = ":
-                    self.lose_games = int(line[5:-1])
-            print(f"拥有金币：{self.gold}\n"
-                  f"拥有点券：{self.rp}\n"
-                  f"胜场：{self.win_games}\n"
-                  f"负场：{self.lose_games}\n")
+                elif 行[0:5] == "GD = ":
+                    self.金币 = int(行[5:-1])
+                elif 行[0:5] == "DQ = ":
+                    self.点券 = int(行[5:-1])
+                elif 行[0:5] == "WM = ":
+                    self.胜场 = int(行[5:-1])
+                elif 行[0:5] == "LM = ":
+                    self.负场 = int(行[5:-1])
+            print(f"拥有金币：{self.金币}\n"
+                  f"拥有点券：{self.点券}\n"
+                  f"胜场：{self.胜场}\n"
+                  f"负场：{self.负场}\n")
             try:
-                print(f"胜率：{'{:.2%}'.format(self.win_games / (self.win_games + self.lose_games))}\n")
+                print(f"胜率：{'{:.2%}'.format(self.胜场 / (self.胜场 + self.负场))}\n")
             except ZeroDivisionError:
                 print(f"胜率：0.00%")
             # 关闭打开的文件
-            self.f.close()
+            self.文件.close()
             return 0
         except OSError:
             print('在数据库中没有这个玩家')
             return 1
 
-    def sign_up(self, login_username, login_password):
+    def 注册(self, login_username, login_password):
         # 记得在客户端上 要他再输入一次
         if os.path.exists(f'./usr/{login_username}'):
             print("用户名已存在")
         else:
-            self.f = open(f"./usr/{login_username}", mode='w', encoding='cp936')
-            self.f.write(f"PW = {login_password}\nGD = 0\nDQ = 0\nWM = 0\nLM = 0\n\n")
+            self.文件 = open(f"./usr/{login_username}", mode='w', encoding='cp936')
+            self.文件.write(f"PW = {login_password}\nGD = 0\nDQ = 0\nWM = 0\nLM = 0\n\n")
             print("注册成功！")
-            self.f.close()
+            self.文件.close()
 
     def receive(self):
-        self.connection.listen()
+        self.连接.listen()
 
     def send(self, message):
-        self.connection.send((json.dumps({
-                    '?': '?',
+        self.连接.send((json.dumps({
+                    'type': 'update',
                     'message': message,
                 }).encode()))
 
     def logout(self):
         try:
-            self.f = open(f"./usr/{self.login_username}", "w+", encoding='cp936')
-            print(f"正在登出: {self.login_username}")
-            self.f.write(f"PW = {self.login_password}\n"
-                         f"GD = {self.gold}\n"
-                         f"DQ = {self.rp}\n"
-                         f"WM = {self.win_games}\n"
-                         f"LM = {self.lose_games}\n\n")
+            self.文件 = open(f"./usr/{self.用户名}", "w+", encoding='cp936')
+            print(f"正在登出: {self.用户名}")
+            self.文件.write(f"PW = {self.密码}\n"
+                         f"GD = {self.金币}\n"
+                         f"DQ = {self.点券}\n"
+                         f"WM = {self.胜场}\n"
+                         f"LM = {self.负场}\n\n")
             print("登出成功，文件已写入，再见")
             # 关闭打开的文件
-            self.f.close()
+            self.文件.close()
             return 0
         except AttributeError:
             print('在数据库中没有这个玩家！')
@@ -160,8 +156,8 @@ class Player:
         pass
 
 
-class Server:
-    __socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+class 服务器:
+    套接字 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     @classmethod
     def __user_thread(cls, user_id):
@@ -174,13 +170,12 @@ class Server:
         # 侦听
         while True:
             # noinspection PyBroadException
+            fuffer = ''
             try:
-                fuffer = ''
-
                 # 解决断包问题
                 while True:
                     # time.sleep(0.1)
-                    buffer = cls.__socket.recv(1024).decode()
+                    buffer = cls.套接字.recv(1024).decode()
                     fuffer += buffer
                     if buffer == '' or buffer[-1] == '}':
                         break
@@ -209,7 +204,7 @@ class Server:
                     print(f"{obj}")
                 # 这里重复了代码。记得改。
             except OSError:
-                print('无法从服务器获取数据')
+                print('无法从客户端获取数据')
                 return
             # except OSError:
             except json.decoder.JSONDecodeError:
@@ -235,85 +230,41 @@ class Server:
             '''
 
     @classmethod
-    def start(cls):
+    def 启动(cls):
         """
         启动服务器
         """
         # 绑定端口
-        cls.__socket.bind(('127.0.0.1', 8888))
+        cls.套接字.bind(('127.0.0.1', 8888))
 
         # 启用监听
-        cls.__socket.listen(5)
+        cls.套接字.listen(5)
         print('服务器已启动，等待连接')
 
         # 开始侦听
         while True:
-            connection, address = cls.__socket.accept()
-            print('收到一个新连接', connection.getsockname(), connection.fileno())
-            # 尝试接受数据
-            # noinspection PyBroadException
+            连接, 地址 = cls.套接字.accept()
+            print('收到一个新连接', 连接.getsockname(), 连接.fileno())
             # try:
-            buffer = connection.recv(1024).decode()
-            # 解析成json数据
-            obj = json.loads(buffer)
-            # 如果是连接指令，那么则返回一个新的用户编号，接收用户连接
-            if obj['type'] == 'login':
-                if obj["username"] == "admin" and obj["password"] == "admin":
-                    print("爹来了")
-                    # 给最高管理权限
-                    PlayerController.admin.connection = connection
-                    PlayerController.admin.connection.send(json.dumps({
-                        'message': "连接成功"
-                    }).encode())
-                    thread = threading.Thread(target=PlayerController.admin.listen())
-                    thread.setDaemon(True)
-                    thread.start()
+            while True:
+                缓存 = 连接.recv(1024).decode()
+                # 解析成json数据
+                对象 = json.loads(缓存)
+                print(对象)
 
-                elif PlayerController.connect(login_username=obj["username"], login_password=obj["password"]) == 0:
-                    PlayerController.player_list[PlayerController.find(obj["username"])].connection = connection
-                    PlayerController.player_list[PlayerController.find(obj["username"])].connection.send(json.dumps({
-                        'sender_id': 0,
-                        'message': "连接成功"
-                    }).encode())
-                else:
-                    connection.send(json.dumps({
-                        'sender_id': 0,
-                        'message': "用户名或密码错误"
-                    }).encode())
-            elif obj['type'] == 'signup':
-                '''
-                self.__connections.append(connection)
-                self.__nicknames.append(obj['username'])
-                connection.send(json.dumps({
-                    'id': len(self.__connections) - 1
-                }).encode())
-                '''
-                # 开辟一个新的线程
-                # thread = threading.Thread(target=self.__user_thread, args=(len(self.__connections) - 1, ))
-                # thread.setDaemon(True)
-                # thread.start()
-            else:
-                print('无法解析json数据包:', connection.getsockname(), connection.fileno())
-                print(buffer)
+
             # except Exception:
             #     print('[Server] 无法接受数据:', connection.getsockname(), connection.fileno())
             #     print(obj)
 
 
 class PlayerController:
-    # 我是传出还是传入？在谁那里操作？
-    # 当有人进来时，用connect
-    # 应该只留给外部一个接口，就是用户名，让这个类来做一切事情
-    # 要不 创建一个字典？
-    # 我想把它封装成 PlayerController."用户名".login("username", "password")
-    # 这样好了 PlayerController.player_list[PlayerController.find("用户名")].干嘛
-
     '''
     这个类用于管理Player，包括客户端连接、存储用户数据、玩家行为
     '''
 
     admin = Admin()
-    player_list = []
+    player_list = list()
 
     @classmethod
     def connect(cls, login_username, login_password):  # 传入 username 和 password，交给 Player.login 去验证
@@ -321,7 +272,7 @@ class PlayerController:
         # 如果有，那就把这次的放到那里去并且把那个删掉
         # if found someone connected
         # self.player_online.append(Player())
-        cls.player_list.append(Player())  # 加一个位置
+        cls.player_list.append(玩家())  # 加一个位置
         if cls.player_list[len(cls.player_list) - 1].登录(login_username=login_username, login_password=login_password) == 0:  # 先给连进来的新客户端分个位置
             print(f"连接成功 {cls.player_list[len(cls.player_list) - 1].login_username}")
         else:

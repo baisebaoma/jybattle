@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 import random
-import scripts.player_new
 
 # 先暂时用？？表示询问玩家是否
 

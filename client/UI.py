@@ -1,15 +1,17 @@
 import os
 import operator
 from client.game import 游戏
+from client.network import *
 
 
 class UI:
     键盘监听 = None
+    busy = False
     指针 = 0
     宽度 = 0
     高度 = 0
     """UI类负责所有的（文字版本的）UI绘制"""
-    垂直同步 = True
+    垂直同步 = False
     总输出 = ''  # 这个给垂直同步用
 
     @classmethod
@@ -27,9 +29,30 @@ class UI:
 
     @staticmethod
     def color(消息):
+
         if 消息 == '花一番玉虚总菊五雷大真人玄都境万寿帝君' or 消息 == '火男'\
                 or 消息 == '锤石' or 消息 == '狐狸' or 消息 == '泽拉斯' or 消息 == '猫':
             return f"\033[33m{消息}\033[0m"  # 黄色
+
+        elif 消息 == '德思勤六楼的工头' or 消息 == '瞎子'\
+                or 消息 == '机器人' or 消息 == '泰坦':
+            return f"\033[31m{消息}\033[0m"  # 红色
+
+        elif 消息 == '我是俊博之王' or 消息 == '霞' or 消息 == '阿卡丽'\
+                or 消息 == '瑞兹' or 消息 == '剑姬' or 消息 == '卡莎':
+            return f"\033[32m{消息}\033[0m"  # 绿色
+
+        elif 消息 == '昊天金阙无上至尊自然妙有弥罗至真玉皇上帝' or 消息 == '寒冰' or 消息 == '探险家':
+            return f"\033[35m{消息}\033[0m"  # 紫色
+
+        elif 消息 == '穿山甲' or 消息 == '亚索':
+            return f"\033[36m{消息}\033[0m"  # 天蓝
+
+        elif 消息 == '盖伦':
+            return f"\033[44m{消息}\033[0m"  # 天蓝
+
+
+
         else:
             return 消息
 
@@ -44,8 +67,31 @@ class UI:
         for 字 in 内容:
             if '\u4e00' <= 字 <= '\u9fa5':
                 计数 += 1
+        '''
         if 计数 % 2 == 1:
             计数 += 1
+        '''
+        return 计数
+
+    @staticmethod
+    def 颜色计数(内容):
+        指针 = 0
+        特殊指针 = 0
+        m指针 = 0
+        计数 = 0
+        while 指针 < len(内容):
+            if 内容[指针] <= '\033':
+                特殊指针 = 指针
+            if 内容[指针] == 'm' and '9' >= 内容[指针 - 1] >= '0':
+                m指针 = 指针
+                计数 += m指针 - 特殊指针 + 1
+                特殊指针 = 0
+                m指针 = 0
+            指针 += 1
+        '''
+        if 计数 % 2 == 1:
+            计数 += 1
+        '''
         return 计数
 
     @classmethod
@@ -62,22 +108,7 @@ class UI:
     @classmethod
     def printc(cls, 内容, 居中=True):  # 全局控制居中输出，只要垂直同步是True 就会保存到总输出里
         总共计数 = len(内容)
-        # 找颜色
-        指针 = 0
-        特殊指针 = 0
-        m指针 = 0
-        颜色计数 = 0
-        while 指针 < 总共计数:
-            if '\030' <= 内容[指针] <= '\047':
-                特殊指针 = 指针
-            if 内容[指针] == 'm' and '9' >= 内容[指针 - 1] >= '0':
-                m指针 = 指针
-                颜色计数 += m指针 - 特殊指针 + 1
-                特殊指针 = 0
-                m指针 = 0
-            指针 += 1
-        if 颜色计数 % 2 == 1:
-            颜色计数 += 1
+        颜色计数 = cls.颜色计数(内容)
         汉字计数 = cls.汉字计数(内容)
         空格数 = cls.宽度 // 2 - 总共计数 // 2 - 汉字计数 // 2 + 颜色计数 // 2
         if 空格数 < 0:
@@ -106,10 +137,10 @@ class UI:
         # cls.draw_line()
         for 玩家 in 游戏.玩家列表:
             cls.draw_line(number=rank, ID=玩家.ID)
-            cls.printc(f"【{cls.color(玩家.角色)}】")
-            # print(' ' * 10 + str(玩家.角色))
             cls.printc(f"{玩家.金币}金币" + ' ' * 3 + \
                        f"{玩家.手牌}手牌" + ' ' * 3 + str(玩家.积分) + '积分')
+            cls.printc(f"【{cls.color(玩家.角色)}】")
+            # print(' ' * 10 + str(玩家.角色))
             cls.printc(cls.翻译英雄池(玩家.英雄池))
             if rank != len(游戏.玩家列表):
                 cls.printc('\n')
@@ -120,7 +151,7 @@ class UI:
         cls.draw_line()
         # cls.printc("通告栏")
         # cls.draw_line()
-        条数 = 5
+        条数 = 4
         while len(游戏.消息队列) > 条数:
             del 游戏.消息队列[0]
         for 消息 in 游戏.消息队列:
@@ -143,13 +174,14 @@ class UI:
         指针 = 0
         while 指针 < len(游戏.控制):
             if 指针 == cls.指针:
-                cls.printc(' ' * (cls.宽度 // 4 - 3 - 距离) + ">>" + ' ' * 距离 + str(游戏.控制[指针]), 居中=False)
+                cls.printc(' ' * (cls.宽度 // 4 - 3 - 距离) + ">>" + ' ' * 距离 + str(cls.color(游戏.控制[指针])), 居中=False)
             else:
-                cls.printc(' ' * (cls.宽度 // 4) + str(游戏.控制[指针]), 居中=False)
+                cls.printc(' ' * (cls.宽度 // 4) + str(cls.color(游戏.控制[指针])), 居中=False)
             指针 += 1
         if cls.键盘监听 == 'enter' or cls.键盘监听 == 'space':
-            # cls.send(游戏.控制[指针])
-            pass
+            print(游戏.控制[cls.指针])
+            网络.发送(游戏.控制[cls.指针])
+            cls.键盘监听 = None
 
     @classmethod
     def draw_round(cls, 游戏):
@@ -168,6 +200,7 @@ class UI:
 
     @classmethod
     def refresh(cls):
+        cls.busy = True
         if not cls.垂直同步:
             cls.cls()
         cmpfun = operator.attrgetter('积分')
@@ -180,4 +213,5 @@ class UI:
             cls.cls()
             print(cls.总输出)
             cls.总输出 = ''
+        cls.busy = False
 

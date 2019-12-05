@@ -1,6 +1,7 @@
 from pynput import keyboard
 from client.UI import UI
-from client.game import 游戏
+# from client.game import 游戏
+import time
 
 
 def on_press(key):
@@ -8,25 +9,34 @@ def on_press(key):
 
 
 def on_release(key):
+
     if key == keyboard.Key.left:
         UI.键盘监听 = 'left'
-        UI.refresh()
+        refresh()
     elif key == keyboard.Key.right:
         UI.键盘监听 = 'right'
-        UI.refresh()
+        refresh()
     elif key == keyboard.Key.up:
         UI.键盘监听 = 'up'
-        UI.refresh()
+        refresh()
     elif key == keyboard.Key.down:
         UI.键盘监听 = 'down'
-        UI.refresh()
+        refresh()
     elif key == keyboard.Key.enter:
         UI.键盘监听 = 'enter'
-        UI.refresh()
+        refresh()
     elif key == keyboard.Key.space:
         UI.键盘监听 = 'space'
-        UI.refresh()
+        refresh()
 
+
+def refresh():
+    if UI.busy is False:
+        UI.refresh()
+    else:
+        while UI.busy is True:
+            time.sleep(0.1)
+        UI.refresh()
 # return False 就可以结束
 
 

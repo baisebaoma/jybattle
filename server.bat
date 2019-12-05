@@ -1,1 +1,2 @@
-python main_new.py
+python server.py
+pause
