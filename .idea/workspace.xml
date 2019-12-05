@@ -46,7 +46,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.main_new">
+  <component name="RunManager" selected="Python.trial (1)">
     <configuration name="UI" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="poker" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -154,11 +154,11 @@
     </configuration>
     <recent_temporary>
       <list>
-        <item itemvalue="Python.main_new" />
-        <item itemvalue="Python.network" />
         <item itemvalue="Python.trial (1)" />
         <item itemvalue="Python.client (1)" />
         <item itemvalue="Python.UI" />
+        <item itemvalue="Python.main_new" />
+        <item itemvalue="Python.network" />
       </list>
     </recent_temporary>
   </component>
@@ -196,9 +196,9 @@
           <option name="timeStamp" value="3" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
-          <url>file://$PROJECT_DIR$/client.py</url>
-          <line>109</line>
-          <option name="timeStamp" value="4" />
+          <url>file://$PROJECT_DIR$/client/UI.py</url>
+          <line>112</line>
+          <option name="timeStamp" value="5" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

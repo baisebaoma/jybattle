@@ -5,7 +5,7 @@ import client.kbdlistener
 from client.game import *
 from client.network import *
 from client.UI import *
-from client.pygamemusic import *
+# from client.pygamemusic import *
 
 # 别的都不用 import
 
@@ -46,7 +46,7 @@ pzk.积分 = 26
 
 tym = 玩家('tym')
 tym.金币 = 37
-tym.角色 = '潜伏'
+tym.角色 = '花一番玉虚总菊五雷大真人玄都境万寿帝君'
 tym.英雄池 = []
 tym.手牌 = 6
 tym.积分 = 0
@@ -84,7 +84,7 @@ cbt.积分 = 26
 cmpfun = operator.attrgetter('积分')
 游戏.玩家列表.sort(key=cmpfun, reverse=True)
 
-游戏.控制 = ["猫", '盖伦', '猫', '泽拉斯', '卡特', '轮子妈']
+游戏.控制 = ["\033[31m猫\033[0m", '盖伦', '猫', '泽拉斯', '卡特', '轮子妈']
 '''
 print("\033[31m这是红色字体\033[0m")
 print("\033[32m这是绿色字体\033[0m")
@@ -114,7 +114,7 @@ while True:
         else:
             游戏.消息队列.append(f"{player.ID} 想花费 6 金装备【猫】，但是他没有钱！")
     UI.refresh()
-    time.sleep(1)
+    time.sleep(0.3)
 
 '''
 version = '1.15'

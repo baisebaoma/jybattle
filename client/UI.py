@@ -2,6 +2,7 @@ import os
 import operator
 from client.game import 游戏
 
+
 class UI:
     键盘监听 = None
     指针 = 0
@@ -11,18 +12,26 @@ class UI:
     垂直同步 = True
     总输出 = ''  # 这个给垂直同步用
 
-    @staticmethod
-    def 翻译英雄池(列表):  # 打印列表
+    @classmethod
+    def 翻译英雄池(cls, 列表):  # 打印列表
         if not 列表:
             return '无'
         字符串 = ''
         for 英雄 in 列表:
-            字符串 += f'{英雄} '
+            字符串 += f'{cls.color(英雄)} '
         return 字符串[0:-1]  # 删掉最后一个空格
 
     @staticmethod
     def cls():
         os.system('cls')
+
+    @staticmethod
+    def color(消息):
+        if 消息 == '花一番玉虚总菊五雷大真人玄都境万寿帝君' or 消息 == '火男'\
+                or 消息 == '锤石' or 消息 == '狐狸' or 消息 == '泽拉斯' or 消息 == '猫':
+            return f"\033[33m{消息}\033[0m"  # 黄色
+        else:
+            return 消息
 
     @classmethod
     def 长宽改变(cls):
@@ -53,8 +62,24 @@ class UI:
     @classmethod
     def printc(cls, 内容, 居中=True):  # 全局控制居中输出，只要垂直同步是True 就会保存到总输出里
         总共计数 = len(内容)
+        # 找颜色
+        指针 = 0
+        特殊指针 = 0
+        m指针 = 0
+        颜色计数 = 0
+        while 指针 < 总共计数:
+            if '\030' <= 内容[指针] <= '\047':
+                特殊指针 = 指针
+            if 内容[指针] == 'm' and '9' >= 内容[指针 - 1] >= '0':
+                m指针 = 指针
+                颜色计数 += m指针 - 特殊指针 + 1
+                特殊指针 = 0
+                m指针 = 0
+            指针 += 1
+        if 颜色计数 % 2 == 1:
+            颜色计数 += 1
         汉字计数 = cls.汉字计数(内容)
-        空格数 = cls.宽度 // 2 - 总共计数 // 2 - 汉字计数 // 2
+        空格数 = cls.宽度 // 2 - 总共计数 // 2 - 汉字计数 // 2 + 颜色计数 // 2
         if 空格数 < 0:
             空格数 = 0
         if not 居中:
@@ -81,7 +106,7 @@ class UI:
         # cls.draw_line()
         for 玩家 in 游戏.玩家列表:
             cls.draw_line(number=rank, ID=玩家.ID)
-            cls.printc(f"【{玩家.角色}】")
+            cls.printc(f"【{cls.color(玩家.角色)}】")
             # print(' ' * 10 + str(玩家.角色))
             cls.printc(f"{玩家.金币}金币" + ' ' * 3 + \
                        f"{玩家.手牌}手牌" + ' ' * 3 + str(玩家.积分) + '积分')
