@@ -37,56 +37,7 @@ class Admin:
 
     def change(self, username, thing, add):
         global p
-        '''
-        # PlayerController.player_list[PlayerController.find(f"{username}")].{thing} += add
-        # print(username)
-        # print(thing)
-        # print(add)
-        # print(p)
-        temp = None
-
-        # string = f"temp = PlayerController.player_list[PlayerController.find('{username}')].{thing}"
-
-        # string = f"temp = PlayerController.player_list[PlayerController.find('asd')].rp"
-        # exec(string)
-
-        exec(f"temp = PlayerController.player_list[PlayerController.find('asd')].rp")
-        # temp = PlayerController.player_list[PlayerController.find('asd')].rp 这句话有用
-
-        # exec("temp = PlayerController.player_list[PlayerController.find('asd')].rp", {'p': p})
-        # , {'username': username, 'thing': thing, 'add': add}
-
-        # exec(f"temp = PlayerController.player_list[PlayerController.find('{username}')].{thing}")
-        print(temp)
-
-        # ###### exec(f"temp = PlayerController.player_list[PlayerController.find('{username}')].{thing}")  # 这一行和trial的一模一样 为什么没用啊
-        # x = f"temp = PlayerController.player_list[PlayerController.find('{username}')].{thing}"
-        # print(x)
-        '''
-        '''
-        if PlayerController.player_list[PlayerController.find('{username}')]:
-            exec(f"PlayerController.player_list[PlayerController.find('{username}')].{thing} += {add}")  # 这一行有用
-            exec(f"self.temp = PlayerController.player_list[PlayerController.find('{username}')].{thing}")  # 这一行没用
-
-            self.connection.send(json.dumps({
-                'message': f"PlayerController.player_list[PlayerController.find('{{{username}}}')] 从 {self.temp - add} 被修改成了 {self.temp}"
-            }).encode())
-
-            # 终于有用了 原来是要用 self.temp ？
-        else:
-            PlayerController.connect(login_username=username, login_password="adminchange")
-        '''
-
-        '''
-        # exec(f"PlayerController.player_list[PlayerController.find('{username}')].{thing} += {add}")
-        # exec(f"temp = PlayerController.player_list[PlayerController.find(f'{username}')].{thing}")
-
-        # string = f"""PlayerController.player_list[PlayerController.find('{username}')].{thing} += {add}
-        # temp = PlayerController.player_list[PlayerController.find('{username}')].{thing}"""
-        string = f"PlayerController.player_list[PlayerController.find('username')].{thing} + {add}"
-        exec(string, {"p": p})
-        '''
-        # print(PlayerController.player_list[PlayerController.find("asd")].rp)
+        pass
 
     def read(self):
         pass
@@ -127,7 +78,7 @@ class Player:
 
         try:
             print(f"正在尝试登录: {self.login_username}")
-            self.f = open(f"./usr/{self.login_username}", "r", encoding='cp936')  # 我的Windows 用的是cp936 不是 UTF-8
+            self.f = open(f"./usr/{self.login_username}", "r", encoding='utf-8')  # 我的Windows 用的是cp936 不是 UTF-8
             self.exist = True
 
             for line in self.f:

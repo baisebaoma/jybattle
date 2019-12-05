@@ -1,4 +1,5 @@
 import os
+import operator
 from client.game import 游戏
 
 class UI:
@@ -8,8 +9,7 @@ class UI:
     高度 = 0
     """UI类负责所有的（文字版本的）UI绘制"""
     垂直同步 = True
-    if 垂直同步:
-        总输出 = ''
+    总输出 = ''  # 这个给垂直同步用
 
     @staticmethod
     def 翻译英雄池(列表):  # 打印列表
@@ -122,6 +122,9 @@ class UI:
             else:
                 cls.printc(' ' * (cls.宽度 // 4) + str(游戏.控制[指针]), 居中=False)
             指针 += 1
+        if cls.键盘监听 == 'enter' or cls.键盘监听 == 'space':
+            # cls.send(游戏.控制[指针])
+            pass
 
     @classmethod
     def draw_round(cls, 游戏):
@@ -135,14 +138,21 @@ class UI:
         cls.draw_card(游戏)
 
     @classmethod
+    def send(cls, 内容):
+        pass
+
+    @classmethod
     def refresh(cls):
-        cls.cls()
+        if not cls.垂直同步:
+            cls.cls()
+        cmpfun = operator.attrgetter('积分')
+        游戏.玩家列表.sort(key=cmpfun, reverse=True)
         cls.draw_round(游戏)
         cls.draw_message(游戏)
         cls.draw_rank(游戏)
         cls.draw_card(游戏)
         if cls.垂直同步:
-            # cls.cls()
+            cls.cls()
             print(cls.总输出)
             cls.总输出 = ''
 
