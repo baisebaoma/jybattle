@@ -8,4 +8,5 @@ import os
 os.system('title 监狱威龙服务器')
 os.system('MODE con: COLS=50 LINES=30')
 
+# 玩家控制.connect('nihao', 'nihao')
 服务器.启动()

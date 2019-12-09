@@ -179,8 +179,7 @@ class UI:
                 cls.printc(' ' * (cls.宽度 // 4) + str(cls.color(游戏.控制[指针])), 居中=False)
             指针 += 1
         if cls.键盘监听 == 'enter' or cls.键盘监听 == 'space':
-            print(游戏.控制[cls.指针])
-            网络.发送(游戏.控制[cls.指针])
+            网络.发送(你好=游戏.控制[cls.指针])
             cls.键盘监听 = None
 
     @classmethod

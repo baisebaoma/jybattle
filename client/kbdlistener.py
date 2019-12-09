@@ -1,6 +1,6 @@
 from pynput import keyboard
-from client.UI import UI
-# from client.game import 游戏
+from client.UI import *
+# from client.UI import UI
 import time
 
 

@@ -61,11 +61,8 @@ class 网络:
                     print('可能是黏包问题，解码失败，无法显示这句话。')
 
     @classmethod
-    def 发送(cls, 内容, 类型="request"):
-        cls.套接字.send(json.dumps({
-            'type': 类型,
-            'message': 内容
-        }).encode())
+    def 发送(cls, **字典):
+        cls.套接字.send(json.dumps(字典).encode())
 
     @classmethod
     def 处理(cls, 事件):
@@ -76,24 +73,21 @@ class 网络:
         事件['对象']
         print(事件)
 
-    def 登录(self):
+    @classmethod
+    def 登录(cls, 用户名):
         """
         登录聊天室
         :param args: 参数
         """
-        username = input("用户名：")
-        # password = input("密码：")
-        password = 1
         # 将昵称发送给服务器，获取用户id
-        self.套接字.send(json.dumps({
-            'type': 'login',
-            'username': username,
-            'password': password,
+        cls.套接字.send(json.dumps({
+            '类型': '登录',
+            '用户名': 用户名,
         }).encode())
         # 尝试接受数据
         try:
             # 开启子线程用于接受数据
-            thread = threading.Thread(target=self.__receive_message_thread)
+            thread = threading.Thread(target=cls.__receive_message_thread)
             thread.setDaemon(True)
             thread.start()
         except json.decoder.JSONDecodeError:
@@ -102,15 +96,18 @@ class 网络:
             # clear()
             print(f'请更新版本。')
 
-    def start(self):
+    @classmethod
+    def start(cls):
         """
         启动客户端
         """
         try:
-            self.套接字.connect(('127.0.0.1', 8888))
+            # self.套接字.connect(('111.229.62.139', 8888))
+            用户名 = input('用户名: ')
+            cls.套接字.connect(('127.0.0.1', 8888))
             # self.__socket.connect(('47.98.179.115', 34674))
             print('正在尝试登录。\n')
-            self.登录()
+            cls.登录(用户名)
         except ConnectionRefusedError:
             print('本地服务器未开启！请联系开发者。')
 

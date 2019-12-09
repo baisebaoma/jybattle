@@ -1,10 +1,12 @@
+# -*- coding: utf-8 -*-
+
 import os
 import json
 import threading
 import socket
 
 
-class Admin:
+class 管理员:
     def __init__(self):
         global p
         self.connection = None
@@ -22,10 +24,10 @@ class Admin:
                 if obj['type'] == 'change':
                     self.change(username=obj['username'], thing=obj['thing'], add=int(obj['add']))
                 else:
-                    print('[Server] 无法解析json数据包:', self.connection.getsockname(), self.connection.fileno())
+                    print('[Server] 无法解析json数据包:', self.connection.getpeername(), self.connection.fileno())
                     print(obj)
             except ConnectionResetError:
-                print('[Server] 连接失效:', self.connection.getsockname(), self.connection.fileno())
+                print('[Server] 连接失效:', self.connection.getpeername(), self.connection.fileno())
                 break
             except IndexError:
                 print('输错了，没有起到作用')
@@ -47,7 +49,6 @@ class Admin:
 
 
 class 玩家:
-
     def __init__(self):
 
         # 下面的用于login
@@ -63,17 +64,13 @@ class 玩家:
         self.游戏中 = False  # 游戏中
         self.exist = False
         self.连接 = None
-
-        # 下面的用于
+        self.IP = None
 
     def 登录(self, 用户名, 密码):
-        # self.login_username = input("输入用户名：")
-        # self.login_password = input("输入密码： ")
         self.用户名 = 用户名
         self.密码 = 密码
-
+        '''
         try:
-            print(f"正在尝试登录: {self.用户名}")
             self.文件 = open(f"./usr/{self.用户名}", "r", encoding='utf-8')  # 我的Windows 用的是cp936 不是 UTF-8
             self.exist = True
 
@@ -113,6 +110,12 @@ class 玩家:
         except OSError:
             print('在数据库中没有这个玩家')
             return 1
+        '''
+        self.在线 = True
+        self.连接.send(json.dumps({
+            '类型': '登录',
+            '数据': '登录成功',
+        }).encode())
 
     def 注册(self, login_username, login_password):
         # 记得在客户端上 要他再输入一次
@@ -124,16 +127,16 @@ class 玩家:
             print("注册成功！")
             self.文件.close()
 
-    def receive(self):
+    def 接收(self):
         self.连接.listen()
 
-    def send(self, message):
+    def 发送(self, message):
         self.连接.send((json.dumps({
                     'type': 'update',
                     'message': message,
                 }).encode()))
 
-    def logout(self):
+    def 登出(self):
         try:
             self.文件 = open(f"./usr/{self.用户名}", "w+", encoding='cp936')
             print(f"正在登出: {self.用户名}")
@@ -155,79 +158,63 @@ class 玩家:
         print("重连成功")
         pass
 
+    def 处理信息(self, obj):
+        if obj['type'] == '出牌':
+            pass
+
 
 class 服务器:
     套接字 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 
     @classmethod
-    def __user_thread(cls, user_id):
-        """
-        用户子线程
-        :param user_id: 用户id
-        """
-        connection = None
-
+    def 用户线程(cls, 连接):
         # 侦听
         while True:
-            # noinspection PyBroadException
-            fuffer = ''
+            全缓存 = ''
             try:
                 # 解决断包问题
                 while True:
-                    # time.sleep(0.1)
-                    buffer = cls.套接字.recv(1024).decode()
-                    fuffer += buffer
-                    if buffer == '' or buffer[-1] == '}':
+                    缓存 = 连接.recv(1024).decode()
+                    全缓存 += 缓存
+                    if 缓存 == '' or 缓存[-1] == '}':
                         break
 
                 # 解决黏包问题
-                find = 0
-                # print(type(fuffer))
-                # print(f"fuffer = {fuffer}")
-                fuffer_split = []
-                while find < len(fuffer) - 1:
-                    if fuffer[find] == "}" and fuffer[find + 1] == "{":
-                        fuffer_split.append(fuffer[0:find + 1])  # 注意：包括开头，不包括结尾！
-                        fuffer = fuffer[find + 1:]
-                        find = -1
-                    find += 1
-                # print(f"current fuffer = {fuffer}")
-                fuffer_split.append(fuffer)
-                if fuffer_split:
-                    # print(f"fuffer_split = {fuffer_split}\n")
-                    for item in fuffer_split:
+                指针 = 0
+                # print(type(全缓存))
+                # print(f"全缓存 = {全缓存}")
+                全缓存分割 = list()
+                while 指针 < len(全缓存) - 1:
+                    if 全缓存[指针] == "}" and 全缓存[指针 + 1] == "{":
+                        全缓存分割.append(全缓存[0:指针 + 1])  # 注意：包括开头，不包括结尾！
+                        全缓存 = 全缓存[指针 + 1:]
+                        指针 = -1
+                    指针 += 1
+                # print(f"current 全缓存 = {全缓存}")
+                全缓存分割.append(全缓存)
+                if 全缓存分割:
+                    # print(f"全缓存分割 = {全缓存分割}\n")
+                    for item in 全缓存分割:
                         obj = json.loads(item)
-                        print(f"{obj}")
-                    # fuffer_split.clear()
+                        print(f"来自 {连接.getpeername()} 的消息：{obj}")
+                        # 玩家.处理信息(obj)
+                    全缓存分割.clear()
                 else:
-                    obj = json.loads(fuffer)
-                    print(f"{obj}")
+                    obj = json.loads(全缓存)
+                    print(f"来自 {连接.getpeername()} 的消息：{obj}")
                 # 这里重复了代码。记得改。
             except OSError:
-                print('无法从客户端获取数据')
+                print(f"{连接.getpeername()} 的连接已断开。")
                 return
             # except OSError:
             except json.decoder.JSONDecodeError:
                 # print(f"\n\n\nfuffer\n\n\n")
                 # print(f'obj = {obj}')
-                if fuffer == '':
+                if 全缓存 == '':
                     print('\n可能是服务器关闭或BUG，无法接收信息。')
                 else:
-                    print(f'\n{fuffer}\n')
+                    print(f'\n{全缓存}\n')
                     print('可能是黏包问题，解码失败，无法显示这句话。')
-            '''
-            try:
-                buffer = connection.recv(1024).decode()
-                # 解析成json数据
-                obj = json.loads(buffer)
-                # 如果是广播指令
-                if True:
-                    pass
-                else:
-                    print('[Server] 无法解析json数据包:', connection.getsockname(), connection.fileno())
-            except Exception:
-                print('[Server] 连接失效:', connection.getsockname(), connection.fileno())
-            '''
 
     @classmethod
     def 启动(cls):
@@ -244,67 +231,66 @@ class 服务器:
         # 开始侦听
         while True:
             连接, 地址 = cls.套接字.accept()
-            print('收到一个新连接', 连接.getsockname(), 连接.fileno())
-            # try:
-            while True:
-                缓存 = 连接.recv(1024).decode()
-                # 解析成json数据
-                对象 = json.loads(缓存)
-                print(对象)
+            print('收到一个新连接', 连接.getpeername(), 连接.fileno())
+
+            线程 = threading.Thread(target=cls.用户线程(连接))
+            线程.start()
+            # 线程 = threading.Thread(target=cls.用户线程(连接))
+            # 线程.start()
 
 
-            # except Exception:
-            #     print('[Server] 无法接受数据:', connection.getsockname(), connection.fileno())
-            #     print(obj)
-
-
-class PlayerController:
+class 玩家控制:
     '''
     这个类用于管理Player，包括客户端连接、存储用户数据、玩家行为
     '''
 
-    admin = Admin()
-    player_list = list()
+    玩家列表 = list()
 
     @classmethod
-    def connect(cls, login_username, login_password):  # 传入 username 和 password，交给 Player.login 去验证
+    def 登录(cls, 用户名, 密码=100):  # 传入 username 和 password，交给 Player.login 去验证
         # 现在的逻辑是，新连进来的客户端先被这个函数安排一个位置，然后再进行登录操作，登录成功后再检测是否这次登录和以前的有重名
         # 如果有，那就把这次的放到那里去并且把那个删掉
-        # if found someone connected
-        # self.player_online.append(Player())
-        cls.player_list.append(玩家())  # 加一个位置
-        if cls.player_list[len(cls.player_list) - 1].登录(login_username=login_username, login_password=login_password) == 0:  # 先给连进来的新客户端分个位置
-            print(f"连接成功 {cls.player_list[len(cls.player_list) - 1].login_username}")
+        cls.玩家列表.append(玩家())  # 加一个位置
+        '''
+        if cls.玩家列表[-1].登录(用户名, 密码) == 0:  # 先给连进来的新客户端分个位置
+            print(f"连接成功 {cls.玩家列表[len(cls.玩家列表) - 1].用户名}")
         else:
             print("连接失败")
             return 1
+        # 先不用密码 就登陆上就ok
+        '''
+        cls.玩家列表[-1].登录(用户名, 密码)
 
         # 如果他的名字和某一个一样 那就证明要不就重复登录 要不就重连
         x = 0
-        for player in cls.player_list:
-            if cls.player_list[len(cls.player_list) - 1].login_username == player.login_username and x != len(cls.player_list) - 1 and player.exist:
-                cls.disconnect(player.login_username)  # 因为先进来的排在前面，肯定会被先搜到，所以这样写没关系
+        for 对象 in cls.玩家列表:
+            if cls.玩家列表[-1].用户名 == 对象.用户名 and x != len(cls.玩家列表) - 1 and 对象.exist:
+                cls.断开(对象.用户名)  # 因为先进来的排在前面，肯定会被先搜到，所以这样写没关系
                 print(f"他的登录顶替了原来这个账号在player_list中的位置！")
-                cls.player_list.insert(x, cls.player_list[-1])
-                del cls.player_list[x + 1]
-                del cls.player_list[-1]
+                cls.玩家列表.insert(x, cls.玩家列表[-1])
+                del cls.玩家列表[x + 1]
+                del cls.玩家列表[-1]
             x += 1
         return 0
 
     @classmethod
-    def disconnect(cls, player_name):
-        cls.player_list[cls.find(player_name)].logout()
-        cls.player_list[cls.find(player_name)].online = False
+    def 断开(cls, player_name):
+        cls.寻找(player_name).登出()
+        cls.寻找(player_name).在线 = False
         # if found someone disconnected numbered x
         # del player_online[0]
 
     @classmethod
-    def find(cls, name):
+    def 寻找(cls, ID):
         x = 0
-        for player in cls.player_list:
-            if player.login_username == name:
-                return x
+        for 对象 in cls.玩家列表:
+            if 对象.用户名 == ID:
+                return 对象
             x += 1
         return -1
 
-
+'''
+# 不能这样做，因为./usr/这个文件夹不在这里！
+if __name__ == '__main__':
+    玩家控制.connect('nihao', 'nihao')
+'''
