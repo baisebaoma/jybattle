@@ -31,12 +31,7 @@ def on_release(key):
 
 
 def refresh():
-    if UI.busy is False:
-        UI.refresh()
-    else:
-        while UI.busy is True:
-            time.sleep(0.1)
-        UI.refresh()
+    UI.refresh()
 
 # return False 就可以结束
 

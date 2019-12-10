@@ -84,12 +84,7 @@ class 网络:
             # print(对象['消息'])
             #
             client.game.游戏.消息队列.append(对象['消息'])
-            if client.UI.UI.busy is False:
-                client.UI.UI.refresh()
-            else:
-                while client.UI.UI.busy is True:
-                    time.sleep(0.1)
-                client.UI.UI.refresh()
+            client.UI.UI.refresh()
             #
 
         else:

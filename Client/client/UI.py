@@ -15,7 +15,7 @@ class UI:
     总输出 = ''  # 这个给垂直同步用
 
     @classmethod
-    def 翻译英雄池(cls, 列表):  # 打印列表
+    def __翻译英雄池(cls, 列表):  # 打印列表
         if not 列表:
             return '无'
         字符串 = ''
@@ -62,7 +62,7 @@ class UI:
         os.system(f'MODE con: COLS={cls.宽度} LINES={cls.高度}')
 
     @staticmethod
-    def 汉字计数(内容):
+    def __汉字计数(内容):
         计数 = 0
         for 字 in 内容:
             if '\u4e00' <= 字 <= '\u9fa5':
@@ -74,7 +74,7 @@ class UI:
         return 计数
 
     @staticmethod
-    def 颜色计数(内容):
+    def __颜色计数(内容):
         指针 = 0
         特殊指针 = 0
         m指针 = 0
@@ -95,8 +95,8 @@ class UI:
         return 计数
 
     @classmethod
-    def 空格补齐(cls, 内容):
-        return len(内容) + cls.汉字计数(内容)
+    def __空格补齐(cls, 内容):
+        return len(内容) + cls.__汉字计数(内容)
 
     @classmethod
     def draw_line(cls, number=None, ID=None):
@@ -108,8 +108,8 @@ class UI:
     @classmethod
     def printc(cls, 内容, 居中=True):  # 全局控制居中输出，只要垂直同步是True 就会保存到总输出里
         总共计数 = len(内容)
-        颜色计数 = cls.颜色计数(内容)
-        汉字计数 = cls.汉字计数(内容)
+        颜色计数 = cls.__颜色计数(内容)
+        汉字计数 = cls.__汉字计数(内容)
         空格数 = cls.宽度 // 2 - 总共计数 // 2 - 汉字计数 // 2 + 颜色计数 // 2
         if 空格数 < 0:
             空格数 = 0
@@ -129,7 +129,7 @@ class UI:
                 print(输出)
 
     @classmethod
-    def draw_rank(cls, 游戏):
+    def __draw_rank(cls, 游戏):
         rank = 1
         cls.draw_line()
         # cls.printc("排行榜")
@@ -141,13 +141,13 @@ class UI:
                        f"{玩家.手牌}手牌" + ' ' * 3 + str(玩家.积分) + '积分')
             cls.printc(f"【{cls.color(玩家.角色)}】")
             # print(' ' * 10 + str(玩家.角色))
-            cls.printc(cls.翻译英雄池(玩家.英雄池))
+            cls.printc(cls.__翻译英雄池(玩家.英雄池))
             if rank != len(游戏.玩家列表):
                 cls.printc('\n')
             rank += 1
 
     @classmethod
-    def draw_message(cls, 游戏):
+    def __draw_message(cls, 游戏):
         cls.draw_line()
         # cls.printc("通告栏")
         # cls.draw_line()
@@ -161,7 +161,7 @@ class UI:
                 cls.printc('\n')
 
     @classmethod
-    def draw_card(cls, 游戏):
+    def __draw_card(cls, 游戏):
         距离 = 5
         cls.draw_line()
         cls.printc(' ' * (cls.宽度 // 4 - 4) + "你的手牌：\n", 居中=False)
@@ -183,34 +183,43 @@ class UI:
             cls.键盘监听 = None
 
     @classmethod
-    def draw_round(cls, 游戏):
+    def __draw_round(cls, 游戏):
         cls.printc(f"第{游戏.回合}回合")
 
     @classmethod
-    def draw_control(cls, 游戏):
+    def __draw_control(cls, 游戏):
         cls.draw_line()
         # cls.printc("手牌区")
         # cls.draw_line()
-        cls.draw_card(游戏)
+        cls.__draw_card(游戏)
 
     @classmethod
     def send(cls, 内容):
         pass
 
     @classmethod
-    def refresh(cls):
+    def __refresh(cls):
         cls.busy = True
         if not cls.垂直同步:
             cls.cls()
         cmpfun = operator.attrgetter('积分')
         游戏.玩家列表.sort(key=cmpfun, reverse=True)
-        cls.draw_round(游戏)
-        cls.draw_message(游戏)
-        cls.draw_rank(游戏)
-        cls.draw_card(游戏)
+        cls.__draw_round(游戏)
+        cls.__draw_message(游戏)
+        cls.__draw_rank(游戏)
+        cls.__draw_card(游戏)
         if cls.垂直同步:
             cls.cls()
             print(cls.总输出)
             cls.总输出 = ''
         cls.busy = False
+
+    @classmethod
+    def refresh(cls):
+        if cls.busy is False:
+            cls.__refresh()
+        else:
+            while cls.busy is True:
+                time.sleep(0.1)
+            cls.__refresh()
 
