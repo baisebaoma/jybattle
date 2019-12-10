@@ -1,0 +1,2 @@
+python kbdlistentrial.py
+pause

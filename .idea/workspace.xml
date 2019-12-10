@@ -21,20 +21,21 @@
   </component>
   <component name="ProjectId" id="1UFF4OylI5nQnaTlSb6xn1AAhSE" />
   <component name="PropertiesComponent">
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/client" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/Client/client" />
     <property name="restartRequiresConfirmation" value="false" />
     <property name="settings.editor.selected.configurable" value="com.jetbrains.python.configuration.PythonContentEntriesConfigurable" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\TYM\poker\new_cleared\Client\client" />
+      <recent name="C:\TYM\poker\new_cleared\client" />
+      <recent name="C:\TYM\poker\new_cleared" />
+      <recent name="C:\TYM\poker\poker\trial\scripts" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="C:\TYM\poker\new_cleared\client\UI" />
       <recent name="C:\TYM\poker\new_cleared\client\game" />
       <recent name="C:\TYM\poker\new_cleared\client" />
-    </key>
-    <key name="CopyFile.RECENT_KEYS">
-      <recent name="C:\TYM\poker\new_cleared\client" />
-      <recent name="C:\TYM\poker\new_cleared" />
-      <recent name="C:\TYM\poker\poker\trial\scripts" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -49,7 +50,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.zidiantrial">
+  <component name="RunManager" selected="Python.threadingtrial2">
     <configuration name="client (2)" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="poker" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -71,7 +72,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="client" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="kbdlistentrial" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="poker" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -79,11 +80,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/filedownload" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Other" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/filedownload/client.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Other/kbdlistentrial.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -92,7 +93,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="server (1)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="threadingtrial" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="poker" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -100,11 +101,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/filedownload" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Other" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/filedownload/server.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Other/threadingtrial.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -113,7 +114,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="server (2)" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="threadingtrial2" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="poker" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -121,11 +122,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Server" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Other" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Server/server.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Other/threadingtrial2.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -157,11 +158,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.threadingtrial2" />
+        <item itemvalue="Python.threadingtrial" />
+        <item itemvalue="Python.kbdlistentrial" />
         <item itemvalue="Python.zidiantrial" />
         <item itemvalue="Python.client (2)" />
-        <item itemvalue="Python.server (2)" />
-        <item itemvalue="Python.client" />
-        <item itemvalue="Python.server (1)" />
       </list>
     </recent_temporary>
   </component>

@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # 换了个编码模式，之前是 cp936
 import random
-import client.kbdlistener
+from client.kbdlistener import listen
 from client.game import *
 from client.network import *
 from client.UI import *
@@ -90,12 +90,12 @@ print("\033[34m这是蓝色字体\033[0m")
 print("\033[38m这是默认字体\033[0m")
 print("\033[7m这是默认红色字体背景绿色\033[0m")
 '''
-print("到我了")
 网络.start()
 # 网络.套接字.connect(('127.0.0.1', 8888))
 # 网络.套接字.connect(('122.244.121.51', 8888))
 
-client.kbdlistener.listen()  # 开始监听键盘
+listen()
+# 开始监听键盘
 # 开始监听网络
 
 while True:
@@ -115,8 +115,9 @@ while True:
             游戏.消息队列.append(f"{player.ID} 花费 6 金，装备了【猫】")
         else:
             游戏.消息队列.append(f"{player.ID} 想花费 6 金装备【猫】，但是他没有钱！")
-    UI.refresh()
     time.sleep(1)
+    UI.refresh()
+
 
 '''
 version = '1.15'

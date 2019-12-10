@@ -1,52 +1,38 @@
-from pynput import keyboard
-from client.UI import *
-# from client.UI import UI
-import time
+import client.UI
+import threading
+import msvcrt
 
 
-def on_press(key):
-    pass
-
-
-def on_release(key):
-
-    if key == keyboard.Key.left:
-        UI.键盘监听 = 'left'
-        refresh()
-    elif key == keyboard.Key.right:
-        UI.键盘监听 = 'right'
-        refresh()
-    elif key == keyboard.Key.up:
-        UI.键盘监听 = 'up'
-        refresh()
-    elif key == keyboard.Key.down:
-        UI.键盘监听 = 'down'
-        refresh()
-    elif key == keyboard.Key.enter:
-        UI.键盘监听 = 'enter'
-        refresh()
-    elif key == keyboard.Key.space:
-        UI.键盘监听 = 'space'
-        refresh()
-
-
-def refresh():
-    UI.refresh()
-
-# return False 就可以结束
+def listen_thread():
+    while True:
+        e = ord(msvcrt.getch())
+        if e == 224:
+            e2 = ord(msvcrt.getch())
+            if e2 == 72:
+                client.UI.UI.键盘监听 = 'up'
+            elif e2 == 80:
+                client.UI.UI.键盘监听 = 'down'
+            elif e2 == 75:
+                client.UI.UI.键盘监听 = 'left'
+            elif e2 == 77:
+                client.UI.UI.键盘监听 = 'right'
+            client.UI.UI.refresh()
+        elif e == 13:
+            client.UI.UI.键盘监听 = 'enter'
+            client.UI.UI.refresh()
+        else:
+            pass
 
 
 def listen():
-    '''
-    with keyboard.Listener(on_press=None, on_release=on_release) as listener:
-        listener.wait()
-    print(keyboard.Listener(on_press=None, on_release=on_release).isDaemon())
-    '''
-    listener = keyboard.Listener(
-        on_press=on_press,
-        on_release=on_release)
-    listener.start()
+    print('创建线程')
+    线程 = threading.Thread(target=listen_thread)
+    print('设置子线程')
+    线程.setDaemon(True)
+    线程.start()
+    return
 
-
+'''
 if __name__ == '__main__':
-    listen()
+    listen_thread()
+'''
