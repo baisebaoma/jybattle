@@ -41,16 +41,16 @@ def 接收消息(连接):
                 return list(obj)
         except OSError:
             print(f"{连接.getpeername()} 的连接已断开。")
-            return None
+            return
         # except OSError:
         except json.decoder.JSONDecodeError:
             if 全缓存 == '':
-                print('\n可能是服务器关闭或BUG，无法接收信息。')
-                return None
+                print('\n可能是客户端关闭或BUG，无法接收信息。')
+                return
             else:
                 print(f'\n{全缓存}\n')
                 print('可能是黏包问题，解码失败，无法显示这句话。')
-                return None
+                return
 
 
 def 用户线程(连接):
@@ -63,20 +63,14 @@ def 用户线程(连接):
             return
 
 
-
-
-
 def 处理消息(消息, 连接):
-    print(消息)
+    print(f"来自 {连接.getpeername()} 的消息：{消息}")
     if 消息['类型'] == '登录':
         玩家控制.广播(类型='广播', 消息=f"{消息['用户名']} 已连接")
         玩家控制.玩家列表.append(玩家(用户名=消息['用户名'], 连接=连接))
 
     elif 消息['类型'] == '游戏':
         玩家控制.广播(类型='广播', 消息=f"你获得了 {消息['消息']}！")
-
-
-
 
 
 class 玩家:
@@ -104,7 +98,7 @@ while True:
     连接, 地址 = 套接字.accept()
     print('收到一个新连接', 连接.getpeername(), 连接.fileno())
     # 第一步检查版本号
-    线程 = threading.Thread(target=用户线程(连接))
-    线程.isDaemon()
+    线程 = threading.Thread(target=用户线程, args=(连接,), daemon=True)
     线程.start()
+
 

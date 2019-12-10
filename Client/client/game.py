@@ -24,3 +24,5 @@ class 游戏:
     控制 = list()
     手牌 = list()
     回合 = 1
+    允许操作 = True
+

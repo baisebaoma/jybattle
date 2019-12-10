@@ -1,7 +1,8 @@
 import client.UI
+import client.game
 import threading
 import msvcrt
-
+import time
 
 def listen_thread():
     while True:
@@ -18,10 +19,12 @@ def listen_thread():
                 client.UI.UI.键盘监听 = 'right'
             client.UI.UI.refresh()
         elif e == 13:
-            client.UI.UI.键盘监听 = 'enter'
-            client.UI.UI.refresh()
+            if client.game.游戏.允许操作:
+                client.UI.UI.键盘监听 = 'enter'
+                client.UI.UI.refresh()
         else:
             pass
+        time.sleep(0.13)
 
 
 def listen():

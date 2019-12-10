@@ -63,7 +63,6 @@ class 网络:
 
     @classmethod
     def 发送(cls, **字典):
-        字典['发送者'] = cls.套接字.getsockname()
         cls.套接字.send(json.dumps(字典).encode())
 
     @classmethod
