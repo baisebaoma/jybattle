@@ -4,6 +4,7 @@ import json
 import time
 import threading
 import client.game
+import client.UI
 
 
 class 网络:
@@ -75,14 +76,20 @@ class 网络:
         事件['值']
         事件['对象']
         '''
-        print(事件列表)
+        # print(事件列表)
 
     @classmethod
     def 消息翻译(cls, 对象):
         if 对象['类型'] == '广播':
-            print(对象['消息'])
+            # print(对象['消息'])
             #
             client.game.游戏.消息队列.append(对象['消息'])
+            if client.UI.UI.busy is False:
+                client.UI.UI.refresh()
+            else:
+                while client.UI.UI.busy is True:
+                    time.sleep(0.1)
+                client.UI.UI.refresh()
             #
 
         else:
