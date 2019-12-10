@@ -3,6 +3,7 @@ import socket
 import json
 import time
 import threading
+import client.game
 
 
 class 网络:
@@ -19,6 +20,7 @@ class 网络:
         while True:
             # noinspection PyBroadException
             全缓存 = ''
+            事件分割 = list()
             try:
                 # 解决断包问题
                 while True:
@@ -39,16 +41,14 @@ class 网络:
                         全缓存 = 全缓存[指针 + 1:]
                         指针 = -1
                     指针 += 1
-                # print(f"current fuffer = {fuffer}")
                 全缓存分割.append(全缓存)
                 if 全缓存分割:
-                    # print(f"fuffer_split = {fuffer_split}\n")
-                    for item in 全缓存分割:
-                        事件 = json.loads(item)
-                        cls.处理(事件)
+                    for 对象 in 全缓存分割:
+                        事件分割.append(json.loads(对象))
+                        cls.处理(事件分割)
                 else:
                     事件 = json.loads(全缓存)
-                    cls.处理(事件)
+                    cls.处理(list(事件))
             except OSError:
                 print('无法从服务器获取数据')
                 return
@@ -62,16 +62,31 @@ class 网络:
 
     @classmethod
     def 发送(cls, **字典):
+        字典['发送者'] = cls.套接字.getsockname()
         cls.套接字.send(json.dumps(字典).encode())
 
     @classmethod
-    def 处理(cls, 事件):
-        消息 = 消息翻译(事件)
+    def 处理(cls, 事件列表):
+        for 对象 in 事件列表:
+            cls.消息翻译(对象)
+        '''
         事件['动作发出者']
         事件['行为']
         事件['值']
         事件['对象']
-        print(事件)
+        '''
+        print(事件列表)
+
+    @classmethod
+    def 消息翻译(cls, 对象):
+        if 对象['类型'] == '广播':
+            print(对象['消息'])
+            #
+            client.game.游戏.消息队列.append(对象['消息'])
+            #
+
+        else:
+            pass
 
     @classmethod
     def 登录(cls, 用户名):
@@ -103,8 +118,8 @@ class 网络:
         """
         try:
             # self.套接字.connect(('111.229.62.139', 8888))
-            用户名 = input('用户名: ')
             cls.套接字.connect(('127.0.0.1', 8888))
+            用户名 = input('用户名: ')
             # self.__socket.connect(('47.98.179.115', 34674))
             print('正在尝试登录。\n')
             cls.登录(用户名)
