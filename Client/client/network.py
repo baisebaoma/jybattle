@@ -44,12 +44,19 @@ class 网络:
                     指针 += 1
                 全缓存分割.append(全缓存)
                 if 全缓存分割:
+                    # client.game.游戏.消息队列.append("【全缓存分割 开始】")  # 调试用
                     for 对象 in 全缓存分割:
                         事件分割.append(json.loads(对象))
-                        cls.处理(事件分割)
+                        # client.game.游戏.消息队列.append(str(对象))  # 调试用
+                    # 很有可能是这个缩进问题【所有 调试用 都是为了调这个bug】
+                    cls.处理(事件分割)
+                    # client.game.游戏.消息队列.append("【全缓存分割 结束】")  # 调试用
                 else:
                     事件 = json.loads(全缓存)
+                    # client.game.游戏.消息队列.append(str(对象))  # 调试用
+                    # client.game.游戏.消息队列.append("【未分割】")  # 调试用
                     cls.处理(list(事件))
+                事件分割.clear()  # 我修了这么久bug 居然是因为少了一行这个？
             except OSError:
                 print('无法从服务器获取数据')
                 return
@@ -67,6 +74,7 @@ class 网络:
 
     @classmethod
     def 处理(cls, 事件列表):
+        # client.game.游戏.消息队列.append(f"{事件列表}")  # 调试用
         for 对象 in 事件列表:
             cls.消息翻译(对象)
         '''
@@ -85,7 +93,9 @@ class 网络:
             client.game.游戏.消息队列.append(对象['消息'])
             client.UI.UI.refresh()
             #
-
+        elif 对象['类型'] == '登录':
+            client.game.游戏.玩家列表.append(client.game.玩家(对象['用户名']))
+            client.game.游戏.消息队列.append(f"{对象['用户名']} 已登录")
         else:
             pass
 

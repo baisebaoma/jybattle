@@ -14,6 +14,7 @@ UI.宽度 = 55
 UI.高度 = 60
 UI.长宽改变()
 
+'''
 游戏.消息队列 = ["现在轮到选择 长方体移动师 的玩家行动！", "选择 长方体移动师 的玩家是 pzk ！", "pzk 正在选择获得手牌或者金币"]
 
 xjb = 玩家('xjb')
@@ -80,6 +81,7 @@ cbt.积分 = 26
 游戏.玩家列表.append(sxd)
 游戏.玩家列表.append(zhl)
 游戏.玩家列表.append(cbt)
+'''
 
 游戏.控制 = ["猫", '盖伦', '猫', '泽拉斯', '卡特', '轮子妈']
 '''
@@ -99,6 +101,7 @@ listen()
 # 开始监听网络
 
 while True:
+    '''
     action = random.randint(1, 3)
     player = 游戏.玩家列表[random.randint(0, 7)]
     if action == 1:
@@ -115,6 +118,7 @@ while True:
             游戏.消息队列.append(f"{player.ID} 花费 6 金，装备了【猫】")
         else:
             游戏.消息队列.append(f"{player.ID} 想花费 6 金装备【猫】，但是他没有钱！")
+    '''
     UI.refresh()
     time.sleep(1)
 

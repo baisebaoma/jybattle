@@ -151,7 +151,7 @@ class UI:
         cls.draw_line()
         # cls.printc("通告栏")
         # cls.draw_line()
-        条数 = 4
+        条数 = 6
         while len(游戏.消息队列) > 条数:
             del 游戏.消息队列[0]
         for 消息 in 游戏.消息队列:

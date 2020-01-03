@@ -4,7 +4,7 @@ class 玩家:
         self.金币 = 0
         self.角色 = None  # None = 未公布
         self.英雄池 = list()
-        self.手牌 = None  # 对于别的玩家，只能看到手牌数但是不能看到几张牌
+        self.手牌 = 0  # 对于别的玩家，只能看到手牌数但是不能看到几张牌
         self.积分 = 0
 
 
