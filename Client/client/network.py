@@ -97,15 +97,17 @@ class 网络:
                 client.game.游戏.消息队列.append(f"{对象['用户名']} 已登录")
 
         elif 对象['类型'] == '控制':
-            if 对象['列表'] == ['clear']:
-                client.game.游戏.控制.clear()
-            elif 对象['列表'] == ['disable']:
+            # if 对象['列表'] == ['clear']:
+            #     client.game.游戏.控制.clear()
+            if 对象['列表'] == ['disable']:
                 cls.发送锁 = False
             elif 对象['列表'] == ['enable']:
                 cls.发送锁 = True
             else:
+                client.game.游戏.控制.clear()
                 for 控制 in 对象['列表']:
                     client.game.游戏.控制.append(控制)
+                client.UI.UI.refresh()
 
         else:
             pass
