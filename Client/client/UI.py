@@ -164,7 +164,7 @@ class UI:
     def __draw_card(cls, 游戏):
         距离 = 5
         cls.draw_line()
-        cls.printc(' ' * (cls.宽度 // 4 - 4) + "你的手牌：\n", 居中=False)
+        cls.printc(' ' * (cls.宽度 // 4 - 4) + "你可进行的操作：\n", 居中=False)
         if cls.键盘监听 == 'up' and cls.指针 > 0:
             cls.指针 -= 1
             cls.键盘监听 = None

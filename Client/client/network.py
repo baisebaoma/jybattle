@@ -12,6 +12,8 @@ class 网络:
     客户端
     """
     套接字 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    发送锁 = True  # True 代表可发，False 代表不可发
+    用户名 = None
 
     @classmethod
     def __receive_message_thread(cls):
@@ -33,8 +35,6 @@ class 网络:
 
                 # 解决黏包问题
                 指针 = 0
-                # print(type(fuffer))
-                # print(f"fuffer = {fuffer}")
                 全缓存分割 = []
                 while 指针 < len(全缓存) - 1:
                     if 全缓存[指针] == "}" and 全缓存[指针 + 1] == "{":
@@ -56,7 +56,7 @@ class 网络:
                     # client.game.游戏.消息队列.append(str(对象))  # 调试用
                     # client.game.游戏.消息队列.append("【未分割】")  # 调试用
                     cls.处理(list(事件))
-                事件分割.clear()  # 我修了这么久bug 居然是因为少了一行这个？
+                # 事件分割.clear()  # 我修了这么久bug 居然是因为少了一行这个？不是
             except OSError:
                 print('无法从服务器获取数据')
                 return
@@ -70,32 +70,43 @@ class 网络:
 
     @classmethod
     def 发送(cls, **字典):
-        cls.套接字.send(json.dumps(字典).encode())
+        if cls.发送锁:
+            字典['用户名'] = cls.用户名
+            cls.套接字.send(json.dumps(字典).encode())
 
     @classmethod
     def 处理(cls, 事件列表):
         # client.game.游戏.消息队列.append(f"{事件列表}")  # 调试用
         for 对象 in 事件列表:
             cls.消息翻译(对象)
-        '''
-        事件['动作发出者']
-        事件['行为']
-        事件['值']
-        事件['对象']
-        '''
-        # print(事件列表)
 
     @classmethod
     def 消息翻译(cls, 对象):
         if 对象['类型'] == '广播':
             # print(对象['消息'])
-            #
             client.game.游戏.消息队列.append(对象['消息'])
             client.UI.UI.refresh()
-            #
+
         elif 对象['类型'] == '登录':
             client.game.游戏.玩家列表.append(client.game.玩家(对象['用户名']))
-            client.game.游戏.消息队列.append(f"{对象['用户名']} 已登录")
+            # client.game.游戏.消息队列.append(f"{对象['用户名']} 已登录")
+            if 对象['用户名'] == cls.用户名:
+                client.game.游戏.玩家列表[-1].自己 = True
+                client.game.游戏.消息队列.append(f"{对象['用户名']} （你自己） 已登录")
+            else:
+                client.game.游戏.消息队列.append(f"{对象['用户名']} 已登录")
+
+        elif 对象['类型'] == '控制':
+            if 对象['列表'] == ['clear']:
+                client.game.游戏.控制.clear()
+            elif 对象['列表'] == ['disable']:
+                cls.发送锁 = False
+            elif 对象['列表'] == ['enable']:
+                cls.发送锁 = True
+            else:
+                for 控制 in 对象['列表']:
+                    client.game.游戏.控制.append(控制)
+
         else:
             pass
 
@@ -128,12 +139,10 @@ class 网络:
         启动客户端
         """
         try:
-            # self.套接字.connect(('111.229.62.139', 8888))
             cls.套接字.connect(('127.0.0.1', 8888))
-            用户名 = input('用户名: ')
-            # self.__socket.connect(('47.98.179.115', 34674))
+            cls.用户名 = input('用户名: ')
             print('正在尝试登录。\n')
-            cls.登录(用户名)
+            cls.登录(cls.用户名)
         except ConnectionRefusedError:
             print('本地服务器未开启！请联系开发者。')
 

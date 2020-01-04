@@ -1,5 +1,7 @@
 class 玩家:
     def __init__(self, ID):
+        self.自己 = False
+        self.准备 = False
         self.ID = ID
         self.金币 = 0
         self.角色 = None  # None = 未公布
