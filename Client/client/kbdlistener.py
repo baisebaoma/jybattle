@@ -4,6 +4,7 @@ import threading
 import msvcrt
 import time
 
+
 def listen_thread():
     while True:
         e = ord(msvcrt.getch())
@@ -27,15 +28,7 @@ def listen_thread():
         time.sleep(0.13)
 
 
-def listen():
-    print('创建线程')
+def 键盘监听():
     线程 = threading.Thread(target=listen_thread)
-    print('设置子线程')
     线程.setDaemon(True)
     线程.start()
-    return
-
-'''
-if __name__ == '__main__':
-    listen_thread()
-'''

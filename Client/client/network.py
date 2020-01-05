@@ -13,7 +13,52 @@ class 网络:
     """
     套接字 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     发送锁 = True  # True 代表可发，False 代表不可发
-    用户名 = None
+    用户名 = ""
+
+    @classmethod
+    def 接收消息(cls):
+        """
+        返回一个列表，里面包含这次接收的消息
+        """
+        全缓存 = ''
+        事件分割 = list()
+        try:
+            # 解决断包问题
+            while True:
+                缓存 = cls.套接字.recv(1024).decode()
+                全缓存 += 缓存
+                if 缓存 == '' or 缓存[-1] == '}':
+                    break
+
+            # 解决黏包问题
+            指针 = 0
+            全缓存分割 = []
+            while 指针 < len(全缓存) - 1:
+                if 全缓存[指针] == "}" and 全缓存[指针 + 1] == "{":
+                    全缓存分割.append(全缓存[0:指针 + 1])  # 注意：包括开头，不包括结尾！
+                    全缓存 = 全缓存[指针 + 1:]
+                    指针 = -1
+                指针 += 1
+            全缓存分割.append(全缓存)
+            if 全缓存分割:
+                for 对象 in 全缓存分割:
+                    事件分割.append(json.loads(对象))
+                return 事件分割
+            else:
+                事件 = json.loads(全缓存)
+                return list(事件)
+        except OSError:
+            print('无法从服务器获取数据')
+            return
+        except json.decoder.JSONDecodeError:
+            if not 全缓存:
+                print('\n可能是服务器关闭或BUG，无法接收信息。')
+                time.sleep(30)
+            else:
+                print(f'\n{全缓存}\n')
+                print('可能是黏包问题，解码失败，无法显示这句话。')
+        finally:
+            return 事件分割
 
     @classmethod
     def __receive_message_thread(cls):
@@ -21,13 +66,11 @@ class 网络:
         接受消息线程
         """
         while True:
-            # noinspection PyBroadException
             全缓存 = ''
             事件分割 = list()
             try:
                 # 解决断包问题
                 while True:
-                    # time.sleep(0.1)
                     缓存 = cls.套接字.recv(1024).decode()
                     全缓存 += 缓存
                     if 缓存 == '' or 缓存[-1] == '}':
@@ -44,19 +87,12 @@ class 网络:
                     指针 += 1
                 全缓存分割.append(全缓存)
                 if 全缓存分割:
-                    # client.game.游戏.消息队列.append("【全缓存分割 开始】")  # 调试用
                     for 对象 in 全缓存分割:
                         事件分割.append(json.loads(对象))
-                        # client.game.游戏.消息队列.append(str(对象))  # 调试用
-                    # 很有可能是这个缩进问题【所有 调试用 都是为了调这个bug】
                     cls.处理(事件分割)
-                    # client.game.游戏.消息队列.append("【全缓存分割 结束】")  # 调试用
                 else:
                     事件 = json.loads(全缓存)
-                    # client.game.游戏.消息队列.append(str(对象))  # 调试用
-                    # client.game.游戏.消息队列.append("【未分割】")  # 调试用
                     cls.处理(list(事件))
-                # 事件分割.clear()  # 我修了这么久bug 居然是因为少了一行这个？不是
             except OSError:
                 print('无法从服务器获取数据')
                 return
@@ -109,40 +145,66 @@ class 网络:
 
         if 对象['用户'] != '系统':
             if 对象['行为'] == '登录':
-                client.game.游戏.玩家列表.append(client.game.玩家(对象['用户']))
                 # client.game.游戏.消息队列.append(f"{对象['用户名']} 已登录")
                 if 对象['用户'] == cls.用户名:
-                    client.game.游戏.玩家列表[-1].自己 = True
                     client.game.游戏.消息队列.append(f"{对象['用户']} （你自己） 已登录")
                     client.game.游戏.控制.append("准备")
+                    client.game.游戏.自己 = client.game.玩家(对象['用户'])
                 else:
                     client.game.游戏.消息队列.append(f"{对象['用户']} 已登录")
+                    client.game.游戏.玩家列表.append(client.game.玩家(对象['用户']))
 
-            if 对象['行为'] == '准备':
-                client.game.游戏.玩家列表.搜索(对象['用户']).准备 = True
-                # client.game.游戏.消息队列.append(f"{对象['用户名']} 已登录")
+            elif 对象['行为'] == '准备':
                 if 对象['用户'] == cls.用户名:
-                    client.game.游戏.玩家列表[-1].自己 = True
                     client.game.游戏.消息队列.append(f"{对象['用户']} （你自己） 已准备")
+                    client.game.游戏.控制 = ["已准备"]
+                    cls.发送锁 = False
                 else:
+                    client.game.游戏.玩家列表.搜索(对象['用户']).准备 = True
                     client.game.游戏.消息队列.append(f"{对象['用户']} 已准备")
+
+        else:
+            if 对象['行为'] == '拒绝登录：重名':
+                print('选择了一个和已存在玩家重复的名字。请重试。')
+
+            elif 对象['行为'] == '拒绝登录：版本':
+                print(f"你的版本过低。请至：{对象['对象']} 更新版本。")
+
+            elif 对象['行为'] == '成功登录':
+                print(f"登录成功")
+                time.sleep(3)
 
             else:
                 pass
 
     @classmethod
-    def 登录(cls, 用户名):
-        """
-        登录聊天室
-        :param args: 参数
-        """
-        # 将昵称发送给服务器，获取用户id
-        cls.套接字.send(json.dumps({
-            '用户': 用户名,
-            '行为': '登录',
-            '对象': 2.1
-        }).encode())
-        # 尝试接受数据
+    def 登录(cls):
+        # 将用户名发送给服务器
+        while True:
+            cls.用户名 = input('用户名: ')
+            print('正在尝试登录。\n')
+            cls.套接字.send(json.dumps({
+                '用户': cls.用户名,
+                '行为': '登录',
+                '对象': 2.1
+            }).encode())
+            # cls.套接字.recv(1024).decode()
+            消息 = cls.接收消息()
+
+            if 消息[0]['行为'] == '拒绝登录：重名':
+                print('选择了一个和已存在玩家重复的名字。请重试。')
+
+            elif 消息[0]['行为'] == '拒绝登录：版本':
+                print(f"你的版本过低。请至：{消息[0]['对象']} 更新版本。")
+
+            elif 消息[0]['行为'] == '成功登录':
+                print(f"登录成功")
+                cls.处理(消息[1:])
+                break
+            time.sleep(1)
+
+            cls.处理(消息[1:])
+
         try:
             # 开启子线程用于接受数据
             thread = threading.Thread(target=cls.__receive_message_thread)
@@ -150,9 +212,6 @@ class 网络:
             thread.start()
         except json.decoder.JSONDecodeError:
             print(f'解码错误')
-        except KeyError:
-            # clear()
-            print(f'请更新版本。')
 
     @classmethod
     def start(cls):
@@ -161,9 +220,7 @@ class 网络:
         """
         try:
             cls.套接字.connect(('127.0.0.1', 8888))
-            cls.用户名 = input('用户名: ')
-            print('正在尝试登录。\n')
-            cls.登录(cls.用户名)
+            cls.登录()
         except ConnectionRefusedError:
             print('本地服务器未开启！请联系开发者。')
 

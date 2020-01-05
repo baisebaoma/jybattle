@@ -217,7 +217,6 @@ class 游戏:
         pass
 
 
-
 套接字 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
 套接字.bind(('127.0.0.1', 8888))
 套接字.listen(5)

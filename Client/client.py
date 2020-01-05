@@ -1,9 +1,8 @@
 # -*- coding: utf-8 -*-
-# 换了个编码模式，之前是 cp936
-import random
-from client.kbdlistener import listen
-from client.game import *
-from client.network import *
+# import random
+from client.kbdlistener import *
+# from client.game import *
+# from client.network import *
 from client.UI import *
 # from client.pygamemusic import *
 
@@ -92,18 +91,20 @@ print("\033[34m这是蓝色字体\033[0m")
 print("\033[38m这是默认字体\033[0m")
 print("\033[7m这是默认红色字体背景绿色\033[0m")
 '''
+
+# 开始监听网络
 网络.start()
 # 网络.套接字.connect(('127.0.0.1', 8888))
 # 网络.套接字.connect(('122.244.121.51', 8888))
 
-listen()
+键盘监听()
 # 开始监听键盘
-# 开始监听网络
+
 
 while True:
     '''
     action = random.randint(1, 3)
-    player = 游戏.玩家列表[random.randint(0, 7)]
+    player = 游戏.玩家列表[random.randint(0, len(游戏.玩家列表) - 1)]
     if action == 1:
         游戏.消息队列.append(f"{player.ID} 已获得2金")
         游戏.玩家列表.搜索(player.ID).金币 += 2
@@ -121,10 +122,3 @@ while True:
     '''
     UI.refresh()
     time.sleep(1)
-
-
-'''
-version = '1.15'
-client = 网络()
-client.start()
-'''

@@ -13,6 +13,7 @@ class UI:
     """UI类负责所有的（文字版本的）UI绘制"""
     垂直同步 = True
     总输出 = ''  # 这个给垂直同步用
+    输出列表 = None  # 这个给排行榜用
 
     @classmethod
     def __翻译英雄池(cls, 列表):  # 打印列表
@@ -30,15 +31,15 @@ class UI:
     @staticmethod
     def color(消息):
 
-        if 消息 == '花一番玉虚总菊五雷大真人玄都境万寿帝君' or 消息 == '火男'\
+        if 消息 == '花一番玉虚总菊五雷大真人玄都境万寿帝君' or 消息 == '火男' \
                 or 消息 == '锤石' or 消息 == '狐狸' or 消息 == '泽拉斯' or 消息 == '猫':
             return f"\033[33m{消息}\033[0m"  # 黄色
 
-        elif 消息 == '德思勤六楼的工头' or 消息 == '瞎子'\
+        elif 消息 == '德思勤六楼的工头' or 消息 == '瞎子' \
                 or 消息 == '机器人' or 消息 == '泰坦':
             return f"\033[31m{消息}\033[0m"  # 红色
 
-        elif 消息 == '我是俊博之王' or 消息 == '霞' or 消息 == '阿卡丽'\
+        elif 消息 == '我是俊博之王' or 消息 == '霞' or 消息 == '阿卡丽' \
                 or 消息 == '瑞兹' or 消息 == '剑姬' or 消息 == '卡莎':
             return f"\033[32m{消息}\033[0m"  # 绿色
 
@@ -65,7 +66,7 @@ class UI:
     def __汉字计数(内容):
         计数 = 0
         for 字 in 内容:
-            if '\u4e00' <= 字 <= '\u9fa5' or 字 == '（' or 字 == '）' or 字 == '、' or 字 == '，' or 字 == '。' :
+            if '\u4e00' <= 字 <= '\u9fa5' or 字 == '（' or 字 == '）' or 字 == '、' or 字 == '，' or 字 == '。':
                 计数 += 1
         '''
         if 计数 % 2 == 1:
@@ -99,9 +100,9 @@ class UI:
         return len(内容) + cls.__汉字计数(内容)
 
     @classmethod
-    def draw_line(cls, number=None, ID=None):
-        if number and ID:
-            cls.printc(f"-- {number} {ID} --")
+    def draw_line(cls, number=None, 用户名=None):
+        if number and 用户名:
+            cls.printc(f"-- {number} {用户名} --")
         else:
             cls.printc("  ---------------------------------------------------  ")
 
@@ -129,29 +130,38 @@ class UI:
                 print(输出)
 
     @classmethod
-    def __draw_rank(cls, 游戏):
+    def __draw_rank(cls):
         rank = 1
         cls.draw_line()
         # cls.printc("排行榜")
         # cls.draw_line()
         # cls.draw_line()
-        for 玩家 in 游戏.玩家列表:
-            cls.draw_line(number=rank, ID=玩家.ID)
-            cls.printc(f"{玩家.金币}金币" + ' ' * 3 + \
-                       f"{玩家.手牌}手牌" + ' ' * 3 + str(玩家.积分) + '积分')
-            cls.printc(f"【{cls.color(玩家.角色)}】")
-            # print(' ' * 10 + str(玩家.角色))
-            cls.printc(cls.__翻译英雄池(玩家.英雄池))
-            if rank != len(游戏.玩家列表):
+        for 玩家 in cls.输出列表:
+            cls.draw_line(number=rank, 用户名=玩家.用户名)
+            cls.printc(f"{玩家.金币}金币" + ' ' * 3 +
+                       f"{玩家.手牌数}手牌" + ' ' * 3 + str(玩家.积分) + '积分')
+            if not 玩家.角色:
+                cls.printc(f"【{cls.color('潜伏')}】")
+            else:
+                cls.printc(f"【{cls.color(玩家.角色)}】")
+            cls.printc("英雄池：" + cls.__翻译英雄池(玩家.英雄池))
+            if 玩家.用户名 == 游戏.自己.用户名:
+                cls.printc("你的手牌：" + cls.__翻译英雄池(玩家.手牌))
+            """
+            if 玩家.用户名 == 游戏.自己.用户名:
+                牌输出 = "手牌："
+                for 牌 in 玩家.手牌:
+                    牌输出 += f"{牌} "
+                cls.printc(f"【{cls.color(牌)}】")
+            """
+            if rank != len(cls.输出列表):
                 cls.printc('\n')
             rank += 1
 
     @classmethod
-    def __draw_message(cls, 游戏):
+    def __draw_message(cls):
         cls.draw_line()
-        # cls.printc("通告栏")
-        # cls.draw_line()
-        条数 = 6
+        条数 = 8
         while len(游戏.消息队列) > 条数:
             del 游戏.消息队列[0]
         for 消息 in 游戏.消息队列:
@@ -161,8 +171,9 @@ class UI:
                 cls.printc('\n')
 
     @classmethod
-    def __draw_card(cls, 游戏):
+    def __draw_control(cls):
         距离 = 5
+        # 输入系统(阶段)
         cls.draw_line()
         cls.printc(' ' * (cls.宽度 // 4 - 4) + "你可进行的操作：\n", 居中=False)
         if cls.键盘监听 == 'up' and cls.指针 > 0:
@@ -180,39 +191,33 @@ class UI:
             指针 += 1
         if cls.键盘监听 == 'enter' or cls.键盘监听 == 'space':
             网络.发送(行为='准备', 对象=游戏.控制[cls.指针])
+            # 记得改
             cls.键盘监听 = None
 
     @classmethod
-    def __draw_round(cls, 游戏):
+    def __draw_round(cls):
         cls.printc(f"第{游戏.回合}回合")
-
-    @classmethod
-    def __draw_control(cls, 游戏):
-        cls.draw_line()
-        # cls.printc("手牌区")
-        # cls.draw_line()
-        cls.__draw_card(游戏)
-
-    @classmethod
-    def send(cls, 内容):
-        pass
 
     @classmethod
     def __refresh(cls):
         cls.busy = True
         if not cls.垂直同步:
             cls.cls()
+        # 复制一份
+        cls.输出列表 = 游戏.玩家列表.copy()
+        cls.输出列表.append(游戏.自己)
         cmpfun = operator.attrgetter('积分')
-        游戏.玩家列表.sort(key=cmpfun, reverse=True)
-        cls.__draw_round(游戏)
-        cls.__draw_message(游戏)
-        cls.__draw_rank(游戏)
-        cls.__draw_card(游戏)
+        cls.输出列表.sort(key=cmpfun, reverse=True)
+        cls.__draw_round()
+        cls.__draw_message()
+        cls.__draw_rank()
+        cls.__draw_control()
         if cls.垂直同步:
             cls.cls()
             print(cls.总输出)
             cls.总输出 = ''
         cls.busy = False
+        # cls.输出列表.clear()
 
     @classmethod
     def refresh(cls):
@@ -223,3 +228,7 @@ class UI:
                 time.sleep(0.1)
             cls.__refresh()
 
+
+def 输入系统(阶段):
+    if 阶段 == '回合开始':
+        游戏.控制 = 游戏.自己.手牌

@@ -1,24 +1,29 @@
 class 玩家:
-    def __init__(self, ID):
-        self.自己 = False
-        self.准备 = False
-        self.ID = ID
-        self.金币 = 0
-        self.角色 = None  # None = 未公布
-        self.英雄池 = list()
-        self.手牌 = 0  # 对于别的玩家，只能看到手牌数但是不能看到几张牌
-        self.积分 = 0
+    金币 = 0
+    角色 = None  # None = 未公布
+    英雄池 = list()
+    手牌数 = 0  # 对于别的玩家，只能看到手牌数但是不能看到几张牌
+    手牌 = ['猫', '猫', '猫', '猫']  # 这个只给自己用
+    积分 = 0
+    自己 = False
+    准备 = False
+
+    def __init__(self, 用户名):
+        self.用户名 = 用户名
 
 
 class 游戏:
+    自己 = None
+
     class 玩家列表类(list):
         def __init__(self, *args):
             super().__init__(*args)
 
-        def 搜索(self, ID):
+        def 搜索(self, 用户名):
             for 玩家 in self:
-                if 玩家.ID == ID:
+                if 玩家.用户名 == 用户名:
                     return 玩家
+            return None
     房间名 = '' + '的房间'
     玩家列表 = 玩家列表类()
     消息队列 = list()
@@ -27,4 +32,3 @@ class 游戏:
     手牌 = list()
     回合 = 1
     允许操作 = True
-
