@@ -5,7 +5,7 @@ import threading
 
 class 基本信息:
     版本 = 2.1
-    新版本地址 = "www.baidu.com"
+    新版本地址 = "http://lol.qq.com"
     # 也许用数会比字符串快一些？
 
 

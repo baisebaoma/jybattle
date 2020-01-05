@@ -1,2 +1,10 @@
-if '\u4e00' <= '（' <= '\u9fa5':
-    print('True')
+import webbrowser
+import threading
+
+
+def browse():
+    webbrowser.open("http://www.baidu.com")
+
+
+thread = threading.Thread(target=browse)
+thread.start()

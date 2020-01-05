@@ -5,6 +5,7 @@ import time
 import threading
 import client.game
 import client.UI
+import webbrowser
 
 
 class 网络:
@@ -142,14 +143,15 @@ class 网络:
                     client.game.游戏.控制.append(控制)
                 client.UI.UI.refresh()
         """
-
         if 对象['用户'] != '系统':
+            pass
             if 对象['行为'] == '登录':
                 # client.game.游戏.消息队列.append(f"{对象['用户名']} 已登录")
                 if 对象['用户'] == cls.用户名:
                     client.game.游戏.消息队列.append(f"{对象['用户']} （你自己） 已登录")
                     client.game.游戏.控制.append("准备")
                     client.game.游戏.自己 = client.game.玩家(对象['用户'])
+                    client.game.游戏.自己.积分 += 10
                 else:
                     client.game.游戏.消息队列.append(f"{对象['用户']} 已登录")
                     client.game.游戏.玩家列表.append(client.game.玩家(对象['用户']))
@@ -164,18 +166,8 @@ class 网络:
                     client.game.游戏.消息队列.append(f"{对象['用户']} 已准备")
 
         else:
-            if 对象['行为'] == '拒绝登录：重名':
-                print('选择了一个和已存在玩家重复的名字。请重试。')
-
-            elif 对象['行为'] == '拒绝登录：版本':
-                print(f"你的版本过低。请至：{对象['对象']} 更新版本。")
-
-            elif 对象['行为'] == '成功登录':
-                print(f"登录成功")
-                time.sleep(3)
-
-            else:
-                pass
+            if 对象['行为'] == '游戏开始':
+                client.game.游戏.消息队列.append(f"游戏开始了！")
 
     @classmethod
     def 登录(cls):
@@ -186,7 +178,7 @@ class 网络:
             cls.套接字.send(json.dumps({
                 '用户': cls.用户名,
                 '行为': '登录',
-                '对象': 2.1
+                '对象': 2.2
             }).encode())
             # cls.套接字.recv(1024).decode()
             消息 = cls.接收消息()
@@ -196,6 +188,7 @@ class 网络:
 
             elif 消息[0]['行为'] == '拒绝登录：版本':
                 print(f"你的版本过低。请至：{消息[0]['对象']} 更新版本。")
+                webbrowser.open(消息[0]['对象'])
 
             elif 消息[0]['行为'] == '成功登录':
                 print(f"登录成功")
@@ -209,6 +202,8 @@ class 网络:
             # 开启子线程用于接受数据
             thread = threading.Thread(target=cls.__receive_message_thread)
             thread.setDaemon(True)
+            # 如果Daemon，那么webbrowser.open那句话就没用了
+            # 现在好像又有用了？搞不清
             thread.start()
         except json.decoder.JSONDecodeError:
             print(f'解码错误')
