@@ -171,24 +171,32 @@ class 网络:
 
     @classmethod
     def 登录(cls):
-        # 将用户名发送给服务器
+        print('检测版本...')
+        # 发送版本号
+        cls.套接字.send(json.dumps({
+            '行为': '版本',
+            '对象': 2.2
+        }).encode())
+        消息 = cls.接收消息()
+        if 消息[0]['行为'] == '拒绝登录：版本':
+            print(f"检测到新版本，请移步打开的网站下载新版本客户端！")
+            webbrowser.open(消息[0]['对象'])
+            cls.处理(消息[1:])
+            time.sleep(60)
+
         while True:
             cls.用户名 = input('用户名: ')
             print('正在尝试登录。\n')
             cls.套接字.send(json.dumps({
                 '用户': cls.用户名,
                 '行为': '登录',
-                '对象': 2.2
+                '对象': 0
             }).encode())
             # cls.套接字.recv(1024).decode()
             消息 = cls.接收消息()
 
             if 消息[0]['行为'] == '拒绝登录：重名':
                 print('选择了一个和已存在玩家重复的名字。请重试。')
-
-            elif 消息[0]['行为'] == '拒绝登录：版本':
-                print(f"你的版本过低。请至：{消息[0]['对象']} 更新版本。")
-                webbrowser.open(消息[0]['对象'])
 
             elif 消息[0]['行为'] == '成功登录':
                 print(f"登录成功")
