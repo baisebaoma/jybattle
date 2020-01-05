@@ -71,7 +71,7 @@ class 网络:
     @classmethod
     def 发送(cls, **字典):
         if cls.发送锁:
-            字典['用户名'] = cls.用户名
+            字典['用户'] = cls.用户名
             cls.套接字.send(json.dumps(字典).encode())
 
     @classmethod
@@ -82,20 +82,17 @@ class 网络:
 
     @classmethod
     def 消息翻译(cls, 对象):
+
+        # 下面这个不应该存在，因为服务器不应该直接发送文本给客户端显示
+        """
         if 对象['类型'] == '广播':
             # print(对象['消息'])
-            client.game.游戏.消息队列.append(对象['消息'])
+            # client.game.游戏.消息队列.append(对象['消息'])
             client.UI.UI.refresh()
+        """
 
-        elif 对象['类型'] == '登录':
-            client.game.游戏.玩家列表.append(client.game.玩家(对象['用户名']))
-            # client.game.游戏.消息队列.append(f"{对象['用户名']} 已登录")
-            if 对象['用户名'] == cls.用户名:
-                client.game.游戏.玩家列表[-1].自己 = True
-                client.game.游戏.消息队列.append(f"{对象['用户名']} （你自己） 已登录")
-            else:
-                client.game.游戏.消息队列.append(f"{对象['用户名']} 已登录")
-
+        # 下面这个不应该存在，因为服务器不应该直接发送控制给客户端显示
+        """
         elif 对象['类型'] == '控制':
             # if 对象['列表'] == ['clear']:
             #     client.game.游戏.控制.clear()
@@ -108,9 +105,30 @@ class 网络:
                 for 控制 in 对象['列表']:
                     client.game.游戏.控制.append(控制)
                 client.UI.UI.refresh()
+        """
 
-        else:
-            pass
+        if 对象['用户'] != '系统':
+            if 对象['行为'] == '登录':
+                client.game.游戏.玩家列表.append(client.game.玩家(对象['用户']))
+                # client.game.游戏.消息队列.append(f"{对象['用户名']} 已登录")
+                if 对象['用户'] == cls.用户名:
+                    client.game.游戏.玩家列表[-1].自己 = True
+                    client.game.游戏.消息队列.append(f"{对象['用户']} （你自己） 已登录")
+                    client.game.游戏.控制.append("准备")
+                else:
+                    client.game.游戏.消息队列.append(f"{对象['用户']} 已登录")
+
+            if 对象['行为'] == '准备':
+                client.game.游戏.玩家列表.搜索(对象['用户']).准备 = True
+                # client.game.游戏.消息队列.append(f"{对象['用户名']} 已登录")
+                if 对象['用户'] == cls.用户名:
+                    client.game.游戏.玩家列表[-1].自己 = True
+                    client.game.游戏.消息队列.append(f"{对象['用户']} （你自己） 已准备")
+                else:
+                    client.game.游戏.消息队列.append(f"{对象['用户']} 已准备")
+
+            else:
+                pass
 
     @classmethod
     def 登录(cls, 用户名):
@@ -120,8 +138,9 @@ class 网络:
         """
         # 将昵称发送给服务器，获取用户id
         cls.套接字.send(json.dumps({
-            '类型': '登录',
-            '用户名': 用户名,
+            '用户': 用户名,
+            '行为': '登录',
+            '对象': 2.1
         }).encode())
         # 尝试接受数据
         try:
