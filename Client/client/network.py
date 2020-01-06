@@ -116,6 +116,7 @@ class 网络:
         # client.game.游戏.消息队列.append(f"{事件列表}")  # 调试用
         for 对象 in 事件列表:
             cls.消息翻译(对象)
+        client.UI.UI.refresh()
 
     @classmethod
     def 消息翻译(cls, 对象):
@@ -149,8 +150,8 @@ class 网络:
                 # client.game.游戏.消息队列.append(f"{对象['用户名']} 已登录")
                 if 对象['用户'] == cls.用户名:
                     client.game.游戏.消息队列.append(f"{对象['用户']} （你自己） 已登录")
-                    client.game.游戏.控制.append("准备")
                     client.game.游戏.自己 = client.game.玩家(对象['用户'])
+                    client.game.游戏.控制.append("准备")
                     # client.game.游戏.自己.积分 += 10
                 else:
                     client.game.游戏.消息队列.append(f"{对象['用户']} 已登录")
@@ -169,7 +170,6 @@ class 网络:
             if 对象['行为'] == '游戏开始':
                 client.game.游戏.消息队列.append(f"游戏开始了！")
                 client.game.游戏.启动()
-        client.UI.UI.refresh()
 
     @classmethod
     def 登录(cls):
