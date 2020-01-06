@@ -204,14 +204,22 @@ class UI:
         if not cls.垂直同步:
             cls.cls()
         # 复制一份
+
         cls.输出列表 = 游戏.玩家列表.copy()
         cls.输出列表.append(游戏.自己)
-        cmpfun = operator.attrgetter('积分')
-        cls.输出列表.sort(key=cmpfun, reverse=True)
+        try:
+            cmpfun = operator.attrgetter('积分')
+            cls.输出列表.sort(key=cmpfun, reverse=True)
+        except AttributeError:
+            pass
         cls.__draw_round()
         cls.__draw_message()
-        cls.__draw_rank()
+        try:
+            cls.__draw_rank()
+        except AttributeError:
+            pass
         cls.__draw_control()
+
         if cls.垂直同步:
             cls.cls()
             print(cls.总输出)
