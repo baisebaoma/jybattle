@@ -3,6 +3,7 @@ import json
 import threading
 import server.champion
 import server.character
+import random
 
 
 class 基本信息:
@@ -91,8 +92,9 @@ def 用户线程(连接):
             for 消息 in 消息列表:
                 处理消息(消息, 连接)
         else:
-            print('线程已关闭')
-            return
+            玩家控制.玩家列表.remove(玩家控制.搜索连接(连接))
+            连接.close()
+            return False
 
 
 def 处理消息(消息, 连接):
@@ -187,6 +189,7 @@ class 玩家:
     金币 = 0
     手牌 = list()
     英雄池 = list()
+    角色 = None
     准备 = False
     跳回合 = False
 
@@ -233,6 +236,12 @@ class 玩家控制:
             if 对象.用户名 == ID:
                 return 对象
 
+    @classmethod
+    def 搜索连接(cls, 连接):
+        for 对象 in cls.玩家列表:
+            if 对象.连接 == 连接:
+                return 对象
+
 
 class 游戏:
     牌堆 = list()
@@ -246,15 +255,23 @@ class 游戏:
         for 对象 in 玩家控制.玩家列表:
             对象.金币 = 2
 
+        for 类 in server.character.角色.角色.__subclasses__():
+            cls.英雄池.append(类())
+        random.shuffle(cls.英雄池)
+        print()
+        for 玩家 in 玩家控制.玩家列表:
+            玩家.角色 = cls.英雄池.pop()
+            print(玩家.角色.名字)
+
         for 类 in server.champion.英雄.英雄.__subclasses__():
             cls.牌堆.append(类())
             cls.牌堆.append(类())
             cls.牌堆.append(类())
-        '''
+        print()
         # 每张牌3张
         for 牌 in cls.牌堆:
             print(牌.名字)
-        '''
+
 
     @classmethod
     def 游戏结束(cls):

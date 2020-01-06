@@ -168,7 +168,8 @@ class 网络:
         else:
             if 对象['行为'] == '游戏开始':
                 client.game.游戏.消息队列.append(f"游戏开始了！")
-                client.game.游戏.开始()
+                client.game.游戏.启动()
+        client.UI.UI.refresh()
 
     @classmethod
     def 登录(cls):

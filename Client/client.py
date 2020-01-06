@@ -121,4 +121,4 @@ while True:
             游戏.消息队列.append(f"{player.ID} 想花费 6 金装备【猫】，但是他没有钱！")
     '''
     UI.refresh()
-    time.sleep(0.5)
+    time.sleep(30)
