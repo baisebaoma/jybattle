@@ -20,9 +20,8 @@ def listen_thread():
                 client.UI.UI.键盘监听 = 'right'
             client.UI.UI.refresh()
         elif e == 13:
-            if client.game.游戏.允许操作:
-                client.UI.UI.键盘监听 = 'enter'
-                client.UI.UI.refresh()
+            client.UI.UI.键盘监听 = 'enter'
+            client.UI.UI.refresh()
         else:
             pass
         time.sleep(0.13)

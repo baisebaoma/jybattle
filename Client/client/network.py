@@ -151,7 +151,7 @@ class 网络:
                     client.game.游戏.消息队列.append(f"{对象['用户']} （你自己） 已登录")
                     client.game.游戏.控制.append("准备")
                     client.game.游戏.自己 = client.game.玩家(对象['用户'])
-                    client.game.游戏.自己.积分 += 10
+                    # client.game.游戏.自己.积分 += 10
                 else:
                     client.game.游戏.消息队列.append(f"{对象['用户']} 已登录")
                     client.game.游戏.玩家列表.append(client.game.玩家(对象['用户']))
@@ -168,6 +168,7 @@ class 网络:
         else:
             if 对象['行为'] == '游戏开始':
                 client.game.游戏.消息队列.append(f"游戏开始了！")
+                client.game.游戏.开始()
 
     @classmethod
     def 登录(cls):
@@ -175,12 +176,13 @@ class 网络:
         # 发送版本号
         cls.套接字.send(json.dumps({
             '行为': '版本',
-            '对象': 2.1
+            '对象': client.game.基本信息.版本
         }).encode())
         消息 = cls.接收消息()
         if 消息[0]['行为'] == '拒绝登录：版本':
-            print("检测到新版本，请移步打开的网站下载新版本客户端！")
-            webbrowser.open(消息[0]['对象'])
+            print("检测到新版本，请移步打开的网站下载新版本客户端！\n"
+                  + 消息[0]['对象'][1])
+            webbrowser.open(消息[0]['对象'][0])
             cls.处理(消息[1:])
             time.sleep(60)
         elif 消息[0]['行为'] == '版本正确':

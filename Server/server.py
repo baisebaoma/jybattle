@@ -1,10 +1,15 @@
 import socket
 import json
 import threading
+import server.champion
+import server.character
 
 
 class 基本信息:
     版本 = 2.1
+    更新说明 = \
+        "全新角色、全新卡牌、全新技能，2.1新版本等你探索！\n" \
+        "请于 baisebaoma.github.io 查看卡牌说明。"
     新版本地址 = "http://lol.qq.com"
     # 也许用数会比字符串快一些？
 
@@ -64,7 +69,7 @@ def 用户线程(连接):
             {
                 '用户': '系统',
                 '行为': '拒绝登录：版本',
-                '对象': 基本信息.新版本地址
+                '对象': [基本信息.新版本地址, 基本信息.更新说明]
             }
         ).encode())
         # 用【对象】存储新版本地址
@@ -145,8 +150,8 @@ def 处理消息(消息, 连接):
                 玩家控制.广播(用户=对象.用户名, 行为='准备')
 
         # 这件事应该客户端来做
-            # 给这个登录的人发送控制消息（准备）
-            # 玩家控制.控制(消息['用户名'], 列表=["准备"])
+        # 给这个登录的人发送控制消息（准备）
+        # 玩家控制.控制(消息['用户名'], 列表=["准备"])
 
         # 给其他的人发送这个人连接的消息
         for 对象 in 玩家控制.玩家列表:
@@ -166,11 +171,11 @@ def 处理消息(消息, 连接):
             if 对象.准备 is False:
                 全玩家准备 = False
                 break
-        if 全玩家准备 and len(玩家控制.玩家列表) >= 4:  # and 房主开始:
+        if 全玩家准备 and len(玩家控制.玩家列表) >= 2:  # and 房主开始:
             玩家控制.广播(用户='系统', 行为=f"游戏开始")
             # 游戏开始
-            # 线程 = threading.Thread(target=游戏.启动, args=(), daemon=True)
-            # 线程.start()
+            线程 = threading.Thread(target=游戏.启动, args=())
+            线程.start()
             pass
 
     else:
@@ -181,8 +186,9 @@ def 处理消息(消息, 连接):
 class 玩家:
     金币 = 0
     手牌 = list()
-    装备 = list()
+    英雄池 = list()
     准备 = False
+    跳回合 = False
 
     def __init__(self, 用户名='', 连接=None):
         self.用户名 = 用户名
@@ -232,13 +238,29 @@ class 游戏:
     牌堆 = list()
     弃牌堆 = list()
     英雄池 = list()
+    回合数 = 1
 
     @classmethod
     def 启动(cls):
-
         # 初始化
         for 对象 in 玩家控制.玩家列表:
             对象.金币 = 2
+
+        for 类 in server.champion.英雄.英雄.__subclasses__():
+            cls.牌堆.append(类())
+            cls.牌堆.append(类())
+            cls.牌堆.append(类())
+        '''
+        # 每张牌3张
+        for 牌 in cls.牌堆:
+            print(牌.名字)
+        '''
+
+    @classmethod
+    def 游戏结束(cls):
+        for 玩家 in 玩家控制.玩家列表:
+            玩家.连接.close()
+        玩家控制.玩家列表.clear()
 
 
 套接字 = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -250,5 +272,3 @@ while True:
     # 第一步检查版本号
     线程 = threading.Thread(target=用户线程, args=(连接,), daemon=True)
     线程.start()
-
-
