@@ -159,8 +159,8 @@
     <recent_temporary>
       <list>
         <item itemvalue="Python.character" />
-        <item itemvalue="Python.trial" />
         <item itemvalue="Python.champion" />
+        <item itemvalue="Python.trial" />
         <item itemvalue="Python.client" />
         <item itemvalue="Python.network" />
       </list>
@@ -215,7 +215,7 @@
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Server/server.py</url>
           <line>262</line>
-          <option name="timeStamp" value="7" />
+          <option name="timeStamp" value="10" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

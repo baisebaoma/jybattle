@@ -264,9 +264,19 @@ class 游戏:
             print(玩家.角色.名字)
 
         for 类 in server.champion.英雄.英雄.__subclasses__():
-            cls.牌堆.append(类())
-            cls.牌堆.append(类())
-            cls.牌堆.append(类())
+            if 类.金币 >= 7:
+                for x in range(1):
+                    cls.牌堆.append(类())
+
+            elif 类.金币 >= 5:
+                for x in range(3):
+                    cls.牌堆.append(类())
+
+            elif 类.金币 >= 1:
+                for x in range(4):
+                    cls.牌堆.append(类())
+
+        # random.shuffle(cls.牌堆)
         print()
         # 每张牌3张
         for 牌 in cls.牌堆:

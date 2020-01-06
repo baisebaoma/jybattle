@@ -1,5 +1,5 @@
 import random
-
+from champion import 英雄
 '''
 class 角色:
     class 角色:
@@ -69,6 +69,7 @@ class 角色:
     class 角色:
         @staticmethod
         def 概率(英雄池, 名字列表, 概率字典):
+            # 与其这样，不如翻开下一张牌更具有节目效果？
             擅长英雄个数 = 0
             for 英雄 in 英雄池:
                 if 英雄.名字 in 名字列表:
@@ -82,6 +83,7 @@ class 角色:
             return 结果
 
     class ZER(角色):
+        名字 = '俊博之王'
         @classmethod
         def 技能(cls, 自己, 对象, 回合数):
             # 对象 是玩家，不是角色！
@@ -94,6 +96,7 @@ class 角色:
                 5: 1.0
             }
             结果 = cls.概率(自己.英雄池, ["Xayah", "Ryze", "Fiora", "Akali", "Kai'Sa"], 概率字典)
+            # 结果 = cls.概率(自己.英雄池, ["霞", "瑞兹", "菲奥娜", "阿卡丽", "卡莎"], 概率字典)
             if 结果:
                 第一个人分牌数 = random.randint(0, 回合数)
                 第二个人分牌数 = 回合数 - 第一个人分牌数
@@ -106,6 +109,7 @@ class 角色:
             # print(胜率, 随机数, 结果)
 
     class ZXX(角色):
+        名字 = '工头'
         @classmethod
         def 技能(cls, 自己, 对象, 属性):
             # 对象 是玩家，不是角色！
@@ -132,6 +136,7 @@ class 角色:
             return [False, 0]
 
     class ZHL(角色):
+        名字 = '菜鸟'
         @staticmethod
         def 技能(自己, 对象):
             # 对象 是玩家，不是角色！
@@ -146,6 +151,7 @@ class 角色:
             return [True]
 
     class SKL(角色):
+        名字 = '至臻上帝'
         @classmethod
         def 技能(cls, 自己, 玩家列表):
             # 对象 是玩家，不是角色！
@@ -153,8 +159,7 @@ class 角色:
                 0: 0.3,
                 1: 0.4,
                 2: 0.5,
-                3: 0.5,
-                4: 1.0,
+                3: 1.0,
             }
             结果 = cls.概率(自己.英雄池, ["Ashe", "Ezreal", "Yasuo", "Kai'Sa"], 概率字典)
             if 结果:
@@ -167,12 +172,13 @@ class 角色:
             # print(胜率, 随机数, 结果)
 
     class XJB:
+        名字 = '万寿帝君'
         @classmethod
         def 技能(cls, 自己, 玩家列表):
             # 对象 是玩家，不是角色！
             pass
 
-
+'''
 if __name__ == '__main__':
 
     # 测试用
@@ -209,4 +215,41 @@ if __name__ == '__main__':
     角色.SKL.技能(自己, 玩家列表)
 
     print(自己.金币, 对象.金币)
+'''
+if __name__ == '__main__':
 
+    # 测试用
+    class 玩家:
+        金币 = 0
+        手牌 = list()
+        英雄池 = list()
+        准备 = False
+        跳回合 = False
+        手牌数 = 0
+
+        def __init__(self, 用户名='', 连接=None):
+            self.用户名 = 用户名
+            self.连接 = 连接
+
+    '''
+    class 英雄:
+        def __init__(self, 名字=''):
+            self.名字 = 名字
+    '''
+
+
+    自己 = 玩家()
+    自己.英雄池 = [英雄.霞(), 英雄.瑞兹()]
+    自己.手牌 = 0
+    对象 = 玩家()
+    对象.英雄池 = None
+    对象.手牌 = 0
+
+    玩家列表 = list()
+    玩家列表.append(自己)
+    玩家列表.append(对象)
+
+    角色.ZER.技能(自己, 对象, 3)
+    # 角色.SKL.技能(自己, 玩家列表)
+
+    print(自己.手牌数, 对象.手牌数)
