@@ -50,7 +50,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.champion">
+  <component name="RunManager" selected="Python.trial">
     <configuration name="champion" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="poker" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -158,10 +158,10 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.trial" />
         <item itemvalue="Python.champion" />
         <item itemvalue="Python.server" />
         <item itemvalue="Python.character" />
-        <item itemvalue="Python.trial" />
         <item itemvalue="Python.client" />
       </list>
     </recent_temporary>

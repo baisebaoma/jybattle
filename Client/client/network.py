@@ -227,8 +227,8 @@ class 网络:
         启动客户端
         """
         try:
-            cls.套接字.connect(('www.baisebaoma.cn', 8888))
+            cls.套接字.connect(('127.0.0.1', 8888))
             cls.登录()
         except ConnectionRefusedError:
-            print('本地服务器未开启！请联系开发者。')
+            print('服务器未开启或正在维护。请稍后重试。')
 

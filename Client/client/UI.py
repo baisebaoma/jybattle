@@ -4,7 +4,14 @@ from client.game import 游戏
 from client.network import *
 
 
-class UI:
+class UIBase:
+    # 本类是所有UI类的父类，包含基本操作。
+    # 请重写REFRESH方法。
+    pass
+
+
+
+class UI(UIBase):
     键盘监听 = None
     busy = False
     指针 = 0
