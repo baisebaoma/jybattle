@@ -116,34 +116,10 @@ class 网络:
         # client.game.游戏.消息队列.append(f"{事件列表}")  # 调试用
         for 对象 in 事件列表:
             cls.消息翻译(对象)
-        client.UI.UI.refresh()
+        client.UI.UIinGame.refresh()
 
     @classmethod
     def 消息翻译(cls, 对象):
-
-        # 下面这个不应该存在，因为服务器不应该直接发送文本给客户端显示
-        """
-        if 对象['类型'] == '广播':
-            # print(对象['消息'])
-            # client.game.游戏.消息队列.append(对象['消息'])
-            client.UI.UI.refresh()
-        """
-
-        # 下面这个不应该存在，因为服务器不应该直接发送控制给客户端显示
-        """
-        elif 对象['类型'] == '控制':
-            # if 对象['列表'] == ['clear']:
-            #     client.game.游戏.控制.clear()
-            if 对象['列表'] == ['disable']:
-                cls.发送锁 = False
-            elif 对象['列表'] == ['enable']:
-                cls.发送锁 = True
-            else:
-                client.game.游戏.控制.clear()
-                for 控制 in 对象['列表']:
-                    client.game.游戏.控制.append(控制)
-                client.UI.UI.refresh()
-        """
         if 对象['用户'] != '系统':
             pass
             if 对象['行为'] == '登录':

@@ -11,27 +11,27 @@ def on_press(key):
 def on_release(key):
 
     if key == keyboard.Key.left:
-        UI.键盘监听 = 'left'
+        UIinGame.键盘监听 = 'left'
         refresh()
     elif key == keyboard.Key.right:
-        UI.键盘监听 = 'right'
+        UIinGame.键盘监听 = 'right'
         refresh()
     elif key == keyboard.Key.up:
-        UI.键盘监听 = 'up'
+        UIinGame.键盘监听 = 'up'
         refresh()
     elif key == keyboard.Key.down:
-        UI.键盘监听 = 'down'
+        UIinGame.键盘监听 = 'down'
         refresh()
     elif key == keyboard.Key.enter:
-        UI.键盘监听 = 'enter'
+        UIinGame.键盘监听 = 'enter'
         refresh()
     elif key == keyboard.Key.space:
-        UI.键盘监听 = 'space'
+        UIinGame.键盘监听 = 'space'
         refresh()
 
 
 def refresh():
-    UI.refresh()
+    UIinGame.refresh()
 
 # return False 就可以结束
 
