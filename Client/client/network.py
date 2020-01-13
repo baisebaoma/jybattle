@@ -158,10 +158,7 @@ class 网络:
         if 消息[0]['行为'] == '拒绝登录：版本':
             webbrowser.open(消息[0]['对象'][0])
             cls.处理(消息[1:])
-            print("检测到新版本，请移步打开的网站下载新版本客户端！\n"
-                  + 消息[0]['对象'][1])
             return str(消息[0]['对象'][1])
-            # time.sleep(60)
         elif 消息[0]['行为'] == '版本正确':
             return True
 
@@ -180,6 +177,7 @@ class 网络:
 
             if 消息[0]['行为'] == '拒绝登录：重名':
                 print('选择了一个和已存在玩家重复的名字。请重试。')
+                return 1
 
             elif 消息[0]['行为'] == '成功登录':
                 print(f"登录成功")
@@ -199,6 +197,8 @@ class 网络:
         except json.decoder.JSONDecodeError:
             print(f'解码错误')
 
+        return 0
+
     @classmethod
     def start(cls):
         """
@@ -206,10 +206,11 @@ class 网络:
         """
         try:
             cls.套接字.connect(('127.0.0.1', 8888))
+            return True
         except ConnectionRefusedError:
-            print('服务器未开启或正在维护。请稍后重试。')
-            return -1
+            # print('服务器未开启或正在维护。请稍后重试。')
+            return 1
         except OSError:
-            print('你在已经连接的连接上再次创建连接。请确认不是bug。')
-            return -2
+            # print('你在已经连接的连接上再次创建连接。请确认不是bug。')
+            return 2
 

@@ -6,14 +6,6 @@ from client.kbdlistener import *
 from client.UI import *
 # from client.pygamemusic import *
 
-# 别的都不用 import
-
-# UIBase.垂直同步 = True
-UIBase.宽度 = 55
-UIBase.高度 = 60
-UIBase.长宽改变()
-
-
 '''
 print("\033[31m这是红色字体\033[0m")
 print("\033[32m这是绿色字体\033[0m")
@@ -29,5 +21,5 @@ print("\033[7m这是默认红色字体背景绿色\033[0m")
 # 键盘监听()
 
 while True:
-    UIController.search().draw()
+    UIController.search().refresh()
     time.sleep(2)

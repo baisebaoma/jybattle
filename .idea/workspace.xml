@@ -2,13 +2,12 @@
 <project version="4">
   <component name="ChangeListManager">
     <list default="true" id="0ea59c41-aaf5-496c-a455-3fc169243bbf" name="Default Changelist" comment="">
-      <change beforePath="$PROJECT_DIR$/.idea/poker.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/poker.iml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/client.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/client/UI.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/client/UI.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/client/kbdlistener.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/client/kbdlistener.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Client/client/network.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/client/network.py" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/Server/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/server.py" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/trial.py" beforeDir="false" afterPath="$PROJECT_DIR$/trial.py" afterDir="false" />
     </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
@@ -58,7 +57,7 @@
       </list>
     </option>
   </component>
-  <component name="RunManager" selected="Python.UI">
+  <component name="RunManager" selected="Python.client">
     <configuration name="UI" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="poker" />
       <option name="INTERPRETER_OPTIONS" value="" />
@@ -101,7 +100,7 @@
       <option name="INPUT_FILE" value="" />
       <method v="2" />
     </configuration>
-    <configuration name="character" type="PythonConfigurationType" factoryName="Python" temporary="true">
+    <configuration name="client" type="PythonConfigurationType" factoryName="Python" temporary="true">
       <module name="poker" />
       <option name="INTERPRETER_OPTIONS" value="" />
       <option name="PARENT_ENVS" value="true" />
@@ -109,11 +108,11 @@
         <env name="PYTHONUNBUFFERED" value="1" />
       </envs>
       <option name="SDK_HOME" value="" />
-      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Server/server" />
+      <option name="WORKING_DIRECTORY" value="$PROJECT_DIR$/Client" />
       <option name="IS_MODULE_SDK" value="true" />
       <option name="ADD_CONTENT_ROOTS" value="true" />
       <option name="ADD_SOURCE_ROOTS" value="true" />
-      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Server/server/character.py" />
+      <option name="SCRIPT_NAME" value="$PROJECT_DIR$/Client/client.py" />
       <option name="PARAMETERS" value="" />
       <option name="SHOW_COMMAND_LINE" value="false" />
       <option name="EMULATE_TERMINAL" value="false" />
@@ -166,11 +165,11 @@
     </configuration>
     <recent_temporary>
       <list>
+        <item itemvalue="Python.client" />
         <item itemvalue="Python.UI" />
         <item itemvalue="Python.trial" />
         <item itemvalue="Python.champion" />
         <item itemvalue="Python.server" />
-        <item itemvalue="Python.character" />
       </list>
     </recent_temporary>
   </component>
@@ -217,7 +216,7 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Server/server.py</url>
-          <line>265</line>
+          <line>266</line>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
@@ -226,12 +225,12 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Client/client/UI.py</url>
-          <line>27</line>
+          <line>28</line>
           <option name="timeStamp" value="12" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Server/server.py</url>
-          <line>95</line>
+          <line>96</line>
           <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>

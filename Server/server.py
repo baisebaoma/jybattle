@@ -78,6 +78,7 @@ def 用户线程(连接):
             for 消息 in 消息列表[1:]:
                 处理消息(消息, 连接)
     else:
+        print(f"尝试登录的用户（{连接.getpeername()}）的版本正确。")
         连接.send(json.dumps(
             {
                 '用户': '系统',

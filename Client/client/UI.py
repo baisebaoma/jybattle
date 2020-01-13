@@ -1,27 +1,28 @@
 import os
 import operator
 import time
-
+import client.kbdlistener
 import colorama
+from client.game import 游戏
+from client.network import *
 colorama.init(autoreset=True)
-try:
-    from client.game import 游戏
-    from client.network import *
-except ModuleNotFoundError:
-    pass
-
 
 class UIController:
     current_location = "Login"
+
     @classmethod
     def search(cls):
         if cls.current_location == 'Game':
+            UIinGame.长宽改变()
             return UIinGame
         elif cls.current_location == 'Room':
+            UIinRoom.长宽改变()
             return UIinRoom
         elif cls.current_location == 'End':
+            UIinEnd.长宽改变()
             return UIinEnd
         elif cls.current_location == 'Login':
+            UILogin.长宽改变()
             return UILogin
 
 
@@ -49,7 +50,6 @@ class UIBase:
     垂直同步 = False
     总输出 = ''  # 这个给垂直同步用
     输出列表 = None  # 这个给排行榜用
-
 
     @classmethod
     def _输出列表(cls, 列表):  # 打印列表
@@ -210,6 +210,7 @@ class UIBase:
 
 class UIinGame(UIBase):
     """UI类负责所有的（文字版本的）UI绘制"""
+    垂直同步 = True
 
     @classmethod
     def __draw_rank(cls):
@@ -311,33 +312,49 @@ class UIinGame(UIBase):
 
 
 class UILogin(UIBase):
+    busy = False
     高度 = 15
     垂直同步 = False
+
     @classmethod
-    def draw(cls):
-        cls.长宽改变()
-        empty_line_number = UILogin.高度 // 3 - 3
-        # time.sleep(0.4)
-        cls.cls()
-        print('\n' * empty_line_number, end='')
-        cls.printi("关闭“快速编辑模式”以获得最佳体验\n")
-        time.sleep(0.7)
-        cls.printi("白色饱马 独立作品\n")
-        time.sleep(0.7)
-        cls.printi("监狱威龙", delay=0.3)
-        time.sleep(1)
-        print()
-        网络.start()
-        update = 网络.检查更新()
-        if update is not True:
-            cls.printc("检测到新版本，请移步打开的网站下载新版本客户端！\n" + update)
-            time.sleep(30)
-            exit(1)
-        cls.printc("输入用户名以登录至服务器\n")
-        用户名 = input(" " * (UILogin.宽度 // 3 - 4) + "用户名：")
-
-
-
+    def refresh(cls):
+        if not cls.busy:
+            cls.busy = True
+            cls.长宽改变()
+            empty_line_number = UILogin.高度 // 3 - 3
+            # time.sleep(0.4)
+            cls.cls()
+            print('\n' * empty_line_number, end='')
+            cls.printi("关闭“快速编辑模式”以获得最佳体验\n")
+            time.sleep(0.7)
+            cls.printi("白色饱马 独立作品\n")
+            time.sleep(0.7)
+            cls.printi("监狱威龙", delay=0.3)
+            time.sleep(1)
+            print()
+            connect = 网络.start()
+            if connect is not True:
+                if connect == 1:
+                    cls.printc('服务器未开启或正在维护。请稍后重试。')
+                    time.sleep(30)
+                    exit(1)
+                elif connect == 2:
+                    cls.printc('你在已经连接的连接上再次创建连接。这应该是一个bug，请报告给 baisebaoma。')
+                    time.sleep(30)
+                    exit(1)
+            # 如果上面的连接失败了，就不能够继续下面的操作
+            update = 网络.检查更新()
+            if update is not True:
+                cls.printc("检测到新版本，请移步打开的网站下载新版本客户端！\n" + update)
+                time.sleep(30)
+                exit(1)
+            cls.printc("输入用户名以登录至服务器\n")
+            用户名 = input(" " * (UILogin.宽度 // 3 - 4) + "用户名：")
+            网络.登录(用户名)
+            client.kbdlistener.键盘监听()
+            UIController.current_location = "Game"
+        else:
+            return
 
 
 class UIinRoom(UIBase):
@@ -346,6 +363,7 @@ class UIinRoom(UIBase):
 
 class UIinEnd(UIBase):
     pass
+
 
 """
 class UI(UIBase):
@@ -572,7 +590,3 @@ class UI(UIBase):
                 time.sleep(0.1)
             cls.__refresh()
 """
-
-
-if __name__ == "__main__":
-    UILogin.draw()
