@@ -92,7 +92,9 @@ def 用户线程(连接):
             for 消息 in 消息列表:
                 处理消息(消息, 连接)
         else:
-            玩家控制.玩家列表.remove(玩家控制.搜索连接(连接))
+            connection_to_be_removed = 玩家控制.搜索连接(连接)
+            if connection_to_be_removed is not False:
+                玩家控制.玩家列表.remove(connection_to_be_removed)
             连接.close()
             return False
 
@@ -241,6 +243,7 @@ class 玩家控制:
         for 对象 in cls.玩家列表:
             if 对象.连接 == 连接:
                 return 对象
+        return False
 
 
 class 游戏:

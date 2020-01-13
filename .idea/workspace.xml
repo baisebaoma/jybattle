@@ -1,7 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0ea59c41-aaf5-496c-a455-3fc169243bbf" name="Default Changelist" comment="" />
+    <list default="true" id="0ea59c41-aaf5-496c-a455-3fc169243bbf" name="Default Changelist" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/poker.iml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/poker.iml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/client.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/client.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/client/UI.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/client/UI.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Client/client/network.py" beforeDir="false" afterPath="$PROJECT_DIR$/Client/client/network.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/Server/server.py" beforeDir="false" afterPath="$PROJECT_DIR$/Server/server.py" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/trial.py" beforeDir="false" afterPath="$PROJECT_DIR$/trial.py" afterDir="false" />
+    </list>
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -209,12 +217,22 @@
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Server/server.py</url>
-          <line>262</line>
+          <line>265</line>
           <option name="timeStamp" value="10" />
         </line-breakpoint>
         <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
           <url>file://$PROJECT_DIR$/Server/server/character.py</url>
           <option name="timeStamp" value="11" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Client/client/UI.py</url>
+          <line>27</line>
+          <option name="timeStamp" value="12" />
+        </line-breakpoint>
+        <line-breakpoint enabled="true" suspend="THREAD" type="python-line">
+          <url>file://$PROJECT_DIR$/Server/server.py</url>
+          <line>95</line>
+          <option name="timeStamp" value="13" />
         </line-breakpoint>
       </breakpoints>
     </breakpoint-manager>

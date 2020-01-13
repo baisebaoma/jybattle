@@ -1,11 +1,18 @@
 import os
 import operator
-from client.game import 游戏
-from client.network import *
+import time
+
+import colorama
+colorama.init(autoreset=True)
+try:
+    from client.game import 游戏
+    from client.network import *
+except ModuleNotFoundError:
+    pass
 
 
 class UIController:
-    current_location = ""
+    current_location = "Login"
     @classmethod
     def search(cls):
         if cls.current_location == 'Game':
@@ -14,6 +21,8 @@ class UIController:
             return UIinRoom
         elif cls.current_location == 'End':
             return UIinEnd
+        elif cls.current_location == 'Login':
+            return UILogin
 
 
 class UIBase:
@@ -37,7 +46,7 @@ class UIBase:
     宽度 = 55
     高度 = 60
 
-    垂直同步 = True
+    垂直同步 = False
     总输出 = ''  # 这个给垂直同步用
     输出列表 = None  # 这个给排行榜用
 
@@ -93,7 +102,7 @@ class UIBase:
     def __汉字计数(内容):
         计数 = 0
         for 字 in 内容:
-            if '\u4e00' <= 字 <= '\u9fa5' or 字 == '（' or 字 == '）' or 字 == '、' or 字 == '，' or 字 == '。':
+            if '\u4e00' <= 字 <= '\u9fa5' or 字 in ["（", "）", "，", "。", "？", "！", "；", "：", "、", "“", "”", "《", "》"]:
                 计数 += 1
         '''
         if 计数 % 2 == 1:
@@ -155,6 +164,33 @@ class UIBase:
                 print()
             else:
                 print(输出)
+
+    @classmethod
+    def printi(cls, 内容, 居中=True, delay=0.035):
+        总共计数 = len(内容)
+        颜色计数 = cls.__颜色计数(内容)
+        汉字计数 = cls.__汉字计数(内容)
+        空格数 = cls.宽度 // 2 - 总共计数 // 2 - 汉字计数 // 2 + 颜色计数 // 2
+        if 空格数 < 0:
+            空格数 = 0
+        if not 居中:
+            输出 = 内容
+        else:
+            输出 = ' ' * 空格数 + 内容
+        if cls.垂直同步:
+            if 内容 == '\n':
+                cls.总输出 += '\n'
+            else:
+                cls.总输出 += 输出 + '\n'
+        else:
+            if 内容 == '\n':
+                print()
+            else:
+                print(" " * 空格数, end="")
+                for 字 in 内容:
+                    print(字, end="")
+                    time.sleep(delay)
+                print('\n', end="")
 
     @classmethod
     def refresh(cls):
@@ -275,12 +311,33 @@ class UIinGame(UIBase):
 
 
 class UILogin(UIBase):
+    高度 = 15
     垂直同步 = False
     @classmethod
     def draw(cls):
-        empty_line_number = UIBase.高度 // 2
+        cls.长宽改变()
+        empty_line_number = UILogin.高度 // 3 - 3
+        # time.sleep(0.4)
+        cls.cls()
         print('\n' * empty_line_number, end='')
-        cls.printc("白色饱马 独立作品")
+        cls.printi("关闭“快速编辑模式”以获得最佳体验\n")
+        time.sleep(0.7)
+        cls.printi("白色饱马 独立作品\n")
+        time.sleep(0.7)
+        cls.printi("监狱威龙", delay=0.3)
+        time.sleep(1)
+        print()
+        网络.start()
+        update = 网络.检查更新()
+        if update is not True:
+            cls.printc("检测到新版本，请移步打开的网站下载新版本客户端！\n" + update)
+            time.sleep(30)
+            exit(1)
+        cls.printc("输入用户名以登录至服务器\n")
+        用户名 = input(" " * (UILogin.宽度 // 3 - 4) + "用户名：")
+
+
+
 
 
 class UIinRoom(UIBase):

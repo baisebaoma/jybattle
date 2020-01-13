@@ -116,7 +116,7 @@ class 网络:
         # client.game.游戏.消息队列.append(f"{事件列表}")  # 调试用
         for 对象 in 事件列表:
             cls.消息翻译(对象)
-        client.UI.UIinGame.refresh()
+        client.UI.UIController.search().refresh()
 
     @classmethod
     def 消息翻译(cls, 对象):
@@ -148,8 +148,7 @@ class 网络:
                 client.game.游戏.启动()
 
     @classmethod
-    def 登录(cls):
-        print('检测版本...')
+    def 检查更新(cls):
         # 发送版本号
         cls.套接字.send(json.dumps({
             '行为': '版本',
@@ -157,16 +156,19 @@ class 网络:
         }).encode())
         消息 = cls.接收消息()
         if 消息[0]['行为'] == '拒绝登录：版本':
-            print("检测到新版本，请移步打开的网站下载新版本客户端！\n"
-                  + 消息[0]['对象'][1])
             webbrowser.open(消息[0]['对象'][0])
             cls.处理(消息[1:])
-            time.sleep(60)
+            print("检测到新版本，请移步打开的网站下载新版本客户端！\n"
+                  + 消息[0]['对象'][1])
+            return str(消息[0]['对象'][1])
+            # time.sleep(60)
         elif 消息[0]['行为'] == '版本正确':
-            print("版本正确")
+            return True
 
+    @classmethod
+    def 登录(cls, 用户名):
         while True:
-            cls.用户名 = input('用户名: ')
+            cls.用户名 = 用户名
             print('正在尝试登录。\n')
             cls.套接字.send(json.dumps({
                 '用户': cls.用户名,
@@ -204,7 +206,10 @@ class 网络:
         """
         try:
             cls.套接字.connect(('127.0.0.1', 8888))
-            cls.登录()
         except ConnectionRefusedError:
             print('服务器未开启或正在维护。请稍后重试。')
+            return -1
+        except OSError:
+            print('你在已经连接的连接上再次创建连接。请确认不是bug。')
+            return -2
 
