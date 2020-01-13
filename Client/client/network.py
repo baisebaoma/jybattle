@@ -183,7 +183,6 @@ class 网络:
                 print(f"登录成功")
                 cls.处理(消息[1:])
                 break
-            time.sleep(1)
 
             cls.处理(消息[1:])
 

@@ -62,7 +62,8 @@ class UIBase:
 
     @staticmethod
     def cls():
-        os.system('cls')
+        # os.system('cls')
+        print('IT TRIES TO CLEAR')
 
     @staticmethod
     def color(消息):
@@ -87,8 +88,6 @@ class UIBase:
 
         elif 消息 == '盖伦':
             return f"\033[44m{消息}\033[0m"  # 天蓝
-
-
 
         else:
             return 消息
@@ -166,7 +165,7 @@ class UIBase:
                 print(输出)
 
     @classmethod
-    def printi(cls, 内容, 居中=True, delay=0.035):
+    def printi(cls, 内容, 居中=True, delay=0.01):
         总共计数 = len(内容)
         颜色计数 = cls.__颜色计数(内容)
         汉字计数 = cls.__汉字计数(内容)
@@ -216,9 +215,6 @@ class UIinGame(UIBase):
     def __draw_rank(cls):
         rank = 1
         cls.draw_line()
-        # cls.printc("排行榜")
-        # cls.draw_line()
-        # cls.draw_line()
         for 玩家 in cls.输出列表:
             cls.draw_line(number=rank, 用户名=玩家.用户名)
             cls.printc(f"{玩家.金币}金币" + ' ' * 3 +
@@ -322,14 +318,12 @@ class UILogin(UIBase):
             cls.busy = True
             cls.长宽改变()
             empty_line_number = UILogin.高度 // 3 - 3
-            # time.sleep(0.4)
-            cls.cls()
             print('\n' * empty_line_number, end='')
             cls.printi("关闭“快速编辑模式”以获得最佳体验\n")
             time.sleep(0.7)
             cls.printi("白色饱马 独立作品\n")
             time.sleep(0.7)
-            cls.printi("监狱威龙", delay=0.3)
+            cls.printi("监狱威龙")
             time.sleep(1)
             print()
             connect = 网络.start()
@@ -350,9 +344,12 @@ class UILogin(UIBase):
                 exit(1)
             cls.printc("输入用户名以登录至服务器\n")
             用户名 = input(" " * (UILogin.宽度 // 3 - 4) + "用户名：")
+            cls.printc("正在登录\n")
             网络.登录(用户名)
             client.kbdlistener.键盘监听()
             UIController.current_location = "Game"
+            UIController.search().长宽改变()
+            UIController.search().refresh()
         else:
             return
 
